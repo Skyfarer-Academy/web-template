@@ -92,6 +92,20 @@ Show aliases:
 Update alias:
 `npx flex-cli process update-alias --process default-booking --alias release-1 --version 14 -m skyfareracademy-dev`
 
+## Stripe Webhooks
+
+To test the webhooks, you can use the Stripe CLI.
+
+```sh
+stripe listen --forward-to localhost:3500/api/webhooks/subscription-stripe
+```
+
+and then in another terminal call the webhook:
+
+```sh
+stripe trigger customer.subscription.created
+```
+
 ## License
 
 This project is licensed under the terms of the Apache-2.0 license.
