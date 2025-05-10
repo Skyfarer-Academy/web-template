@@ -1,3 +1,6 @@
+console.log("🛎️ Page cover phpto loaded");
+
+
 import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -74,7 +77,11 @@ import {
   handleSubmitInquiry,
   handleSubmit,
   priceForSchemaMaybe,
+  handleToggleFavorites,
 } from './ListingPage.shared';
+
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
+
 import SectionHero from './SectionHero';
 import SectionTextMaybe from './SectionTextMaybe';
 import SectionReviews from './SectionReviews';
@@ -118,6 +125,7 @@ export const ListingPageComponent = props => {
     config,
     routeConfiguration,
     showOwnListingsOnly,
+    onUpdateFavorites,
     ...restOfProps
   } = props;
 
@@ -291,6 +299,13 @@ export const ListingPageComponent = props => {
     setImageCarouselOpen(true);
   };
 
+  const onToggleFavorites = handleToggleFavorites({
+    ...commonParams,
+    currentUser,
+    onUpdateFavorites,
+    location,
+  });
+
   return (
     <Page
       title={schemaTitle}
@@ -319,6 +334,7 @@ export const ListingPageComponent = props => {
           listing={currentListing}
           isOwnListing={isOwnListing}
           currentUser={currentUser}
+          onToggleFavorites={onToggleFavorites}
           editParams={{
             id: listingId.uuid,
             slug: listingSlug,
@@ -419,6 +435,7 @@ export const ListingPageComponent = props => {
               marketplaceCurrency={config.currency}
               dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
               marketplaceName={config.marketplaceName}
+              onToggleFavorites={onToggleFavorites}
             />
           </div>
         </div>
@@ -580,6 +597,7 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone, options) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone, options)), // for OrderPanel
+  onUpdateFavorites: (payload) => dispatch(updateProfile(payload)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
