@@ -71,13 +71,56 @@ export class SearchMapComponent extends Component {
       }
     }
 
-    this.state = { infoCardOpen: null, mapReattachmentCount };
+    // Default Seattle metro area coordinates and zoom
+    this.defaultCenter = { lat: 47.6062, lng: -122.3321 }; // Seattle
+    this.defaultZoom = 9;
+
+    this.state = { 
+      infoCardOpen: null, 
+      mapReattachmentCount,
+      center: this.defaultCenter,
+      zoom: this.defaultZoom,
+      locationInitialized: false,
+    };
 
     this.createURLToListing = this.createURLToListing.bind(this);
     this.onListingInfoCardClicked = this.onListingInfoCardClicked.bind(this);
     this.onListingClicked = this.onListingClicked.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
     this.onMapLoadHandler = this.onMapLoadHandler.bind(this);
+  }
+
+  componentDidMount() {
+    // Try to get browser geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          // 150 miles ≈ 241 km, calculate zoom level for this radius
+          // For Google Maps, zoom 8-9 covers about 150 miles
+          this.setState({
+            center: { lat: latitude, lng: longitude },
+            zoom: 8,
+            locationInitialized: true,
+          });
+        },
+        () => {
+          // If user denies or fails, use default Seattle
+          this.setState({
+            center: this.defaultCenter,
+            zoom: this.defaultZoom,
+            locationInitialized: true,
+          });
+        }
+      );
+    } else {
+      // Geolocation not supported
+      this.setState({
+        center: this.defaultCenter,
+        zoom: this.defaultZoom,
+        locationInitialized: true,
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -138,11 +181,11 @@ export class SearchMapComponent extends Component {
       rootClassName,
       reusableContainerClassName,
       bounds,
-      center = null,
+      center: propCenter = null,
       location,
       listings: originalListings,
       onMapMoveEnd,
-      zoom = 11,
+      zoom: propZoom = 11,
       config,
       activeListingId,
       messages,
@@ -167,6 +210,15 @@ export class SearchMapComponent extends Component {
     const SearchMapVariantComponent = getSearchMapVariantComponent(mapProvider);
     const isMapProviderAvailable =
       hasApiAccessForMapProvider && getSearchMapVariant(mapProvider).isMapsLibLoaded();
+
+    // Use detected or default center/zoom unless explicitly provided by props
+    const center = propCenter || this.state.center;
+    const zoom = propZoom || this.state.zoom;
+
+    // Wait for location to be initialized before rendering map
+    if (!this.state.locationInitialized) {
+      return <div className={classNames(classes, reusableContainerClassName || css.defaultMapLayout)} />;
+    }
 
     return isMapProviderAvailable ? (
       <ReusableMapContainer
