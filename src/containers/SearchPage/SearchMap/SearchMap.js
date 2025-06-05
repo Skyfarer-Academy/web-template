@@ -96,13 +96,73 @@ export class SearchMapComponent extends Component {
       navigator.geolocation.getCurrentPosition(
         position => {
           const { latitude, longitude } = position.coords;
-          // 150 miles ≈ 241 km, calculate zoom level for this radius
-          // For Google Maps, zoom 8-9 covers about 150 miles
-          this.setState({
-            center: { lat: latitude, lng: longitude },
-            zoom: 8,
-            locationInitialized: true,
+          // 150 miles ≈ 241 km
+          const RADIUS_MILES = 150;
+          const RADIUS_KM = 241;
+
+          // Helper to calculate distance between two lat/lng points (Haversine formula)
+          function getDistanceMiles(lat1, lng1, lat2, lng2) {
+            const toRad = x => (x * Math.PI) / 180;
+            const R = 3958.8; // Radius of Earth in miles
+            const dLat = toRad(lat2 - lat1);
+            const dLng = toRad(lng2 - lng1);
+            const a =
+              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(lat1)) *
+                Math.cos(toRad(lat2)) *
+                Math.sin(dLng / 2) *
+                Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+          }
+
+          // Find listings within 150 miles of user
+          const listingsArray = this.props.listings || [];
+          const listingsWithLocation = listingsArray.filter(l => !!l.attributes.geolocation);
+          const nearbyListings = listingsWithLocation.filter(l => {
+            const { lat, lng } = l.attributes.geolocation;
+            return getDistanceMiles(latitude, longitude, lat, lng) <= RADIUS_MILES;
           });
+
+          if (nearbyListings.length >= 5) {
+            // Center on user location
+            this.setState({
+              center: { lat: latitude, lng: longitude },
+              zoom: 8,
+              locationInitialized: true,
+            });
+          } else {
+            // Try to find a cluster of 5+ listings within 150 miles of each other
+            let bestCluster = [];
+            for (let i = 0; i < listingsWithLocation.length; i++) {
+              const { lat, lng } = listingsWithLocation[i].attributes.geolocation;
+              const cluster = listingsWithLocation.filter(l2 => {
+                const { lat: lat2, lng: lng2 } = l2.attributes.geolocation;
+                return getDistanceMiles(lat, lng, lat2, lng2) <= RADIUS_MILES;
+              });
+              if (cluster.length >= 5 && cluster.length > bestCluster.length) {
+                bestCluster = cluster;
+                // Early exit if we find a big enough cluster
+                if (bestCluster.length >= 10) break;
+              }
+            }
+            if (bestCluster.length >= 5) {
+              // Center on the first listing in the best cluster
+              const { lat, lng } = bestCluster[0].attributes.geolocation;
+              this.setState({
+                center: { lat, lng },
+                zoom: 8,
+                locationInitialized: true,
+              });
+            } else {
+              // Fallback: Seattle
+              this.setState({
+                center: this.defaultCenter,
+                zoom: this.defaultZoom,
+                locationInitialized: true,
+              });
+            }
+          }
         },
         () => {
           // If user denies or fails, use default Seattle
