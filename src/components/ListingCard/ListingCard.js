@@ -115,6 +115,7 @@ export const ListingCard = props => {
     showAuthorInfo = true,
     showHeartIcon,
     showStateInfo = true, 
+    showCityInfo =true,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
@@ -127,6 +128,7 @@ export const ListingCard = props => {
   //console.log(listing.author);
   const authorName = author.attributes.profile.displayName;
   const stateInfo = publicData.State;
+  const cityInfo = publicData.City;
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
 
@@ -144,8 +146,9 @@ export const ListingCard = props => {
         onMouseEnter: () => {
           setActiveListing(currentListing.id);
 
-          console.log('publicData:', publicData);
-          console.log('listingType:', publicData?.listingType);        },
+          //console.log('publicData:', publicData);
+          //console.log('listingType:', publicData?.listingType);        
+        },
         onMouseLeave: () => setActiveListing(null),
       }
     : null;
@@ -216,7 +219,8 @@ export const ListingCard = props => {
   }
 };
 
-console.log('ListingCard → stateInfo:', stateInfo);
+//console.log('ListingCard → stateInfo:', stateInfo);
+//console.log('City info----->', cityInfo);
 
 
   return (
@@ -261,11 +265,9 @@ console.log('ListingCard → stateInfo:', stateInfo);
               longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
               longWordClass: css.longWord,
             })}
+            {showStateInfo ? `, ${stateInfo}` : null}
           </div>
-          {showStateInfo ? (
-            <div className={css.stateInfo}>{stateInfo}
-            </div>
-          ) : null}
+          
           {showAuthorInfo ? (
             <div className={css.authorInfo}>
               <FormattedMessage id="ListingCard.author" values={{ authorName }} />
