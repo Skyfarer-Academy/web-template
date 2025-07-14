@@ -74,6 +74,16 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
   );
 };
 
+const PostNewTrainingLink = () => {
+  return (
+    <NamedLink className={css.topbarLink} name="NewListingPage">
+      <span className={css.topbarLinkLabel}>
+        <FormattedMessage id="TopbarDesktop.postNewTraining" defaultMessage="Post a new training" />
+      </span>
+    </NamedLink>
+  );
+};
+
 const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink }) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
@@ -189,6 +199,10 @@ const TopbarDesktop = props => {
     <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
   ) : null;
 
+  const postNewTrainingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
+    <PostNewTrainingLink />
+  ) : null;
+
   const profileMenuMaybe = authenticatedOnClientSide ? (
     <ProfileMenu
       currentPage={currentPage}
@@ -217,6 +231,12 @@ const TopbarDesktop = props => {
     />
   );
 
+  console.log('isAuthenticated:', isAuthenticated);
+  console.log('mounted:', mounted);
+  console.log('authenticatedOnClientSide:', authenticatedOnClientSide);
+  console.log('currentUser:', currentUser);
+  console.log('isInstructor:', isInstructor(currentUser));
+
   return (
     <nav className={classes}>
       <LinkedLogo
@@ -225,6 +245,8 @@ const TopbarDesktop = props => {
         alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
         linkToExternalSite={config?.topbar?.logoLink}
       />
+
+      {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training left of search] */}
       {searchFormMaybe}
 
       <CustomLinksMenu
@@ -235,7 +257,6 @@ const TopbarDesktop = props => {
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
       />
-
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
       {inboxLinkMaybe}

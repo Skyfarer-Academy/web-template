@@ -258,8 +258,9 @@ export const EditListingPageComponent = props => {
     );
 
     const title = isNewListingFlow
-      ? intl.formatMessage({ id: 'EditListingPage.titleCreateListing' })
-      : intl.formatMessage({ id: 'EditListingPage.titleEditListing' });
+    ? intl.formatMessage({ id: 'EditListingPage.titleCreateListing' })
+    : intl.formatMessage({ id: 'EditListingPage.titleEditListing' });
+    console.log("Post a new training here");
 
     return (
       <Page title={title} scrollingDisabled={scrollingDisabled}>
