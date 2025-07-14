@@ -246,9 +246,8 @@ const TopbarDesktop = props => {
         linkToExternalSite={config?.topbar?.logoLink}
       />
 
-      {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training left of search] */}
       {searchFormMaybe}
-
+      {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training left of search] */}
       <CustomLinksMenu
         currentPage={currentPage}
         currentUser={currentUser}
@@ -256,7 +255,7 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-      />
+        />
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
       {inboxLinkMaybe}
