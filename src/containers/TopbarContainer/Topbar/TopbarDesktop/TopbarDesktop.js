@@ -246,8 +246,8 @@ const TopbarDesktop = props => {
         linkToExternalSite={config?.topbar?.logoLink}
       />
       {searchFormMaybe}
-      {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training right of search] */}
       <CustomLinksMenu
+       {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training right of search] */}
         currentPage={currentPage}
         currentUser={currentUser}
         customLinks={customLinks}
