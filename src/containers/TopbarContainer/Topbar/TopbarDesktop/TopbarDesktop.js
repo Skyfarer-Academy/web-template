@@ -78,7 +78,7 @@ const PostNewTrainingLink = () => {
   return (
     <NamedLink className={css.topbarLink} name="NewListingPage">
       <span className={css.topbarLinkLabel}>
-        <FormattedMessage id="TopbarDesktop.postNewTraining" defaultMessage="Post a new training" />
+        <FormattedMessage id="TopbarDesktop.postNewTraining" defaultMessage="Post a New Training" />
       </span>
     </NamedLink>
   );
@@ -245,9 +245,8 @@ const TopbarDesktop = props => {
         alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
         linkToExternalSite={config?.topbar?.logoLink}
       />
-
       {searchFormMaybe}
-      {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training left of search] */}
+      {postNewTrainingLinkMaybe}{/* [SKYFARER: show post training right of search] */}
       <CustomLinksMenu
         currentPage={currentPage}
         currentUser={currentUser}
