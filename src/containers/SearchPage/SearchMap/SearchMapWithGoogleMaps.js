@@ -469,9 +469,9 @@ class SearchMapWithGoogleMaps extends Component {
   initializeMap() {
     const { offsetHeight, offsetWidth } = this.state.mapContainer;
     const hasDimensions = offsetHeight > 0 && offsetWidth > 0;
-
+    // Skyfarer
     if (hasDimensions) {
-      const { bounds, center = new sdkTypes.LatLng(0, 0), zoom = 11 } = this.props;
+      const { bounds, center = new sdkTypes.LatLng(0, 0), zoom = 11, options = {} } = this.props;
       const maps = window.google.maps;
       const controlPosition = maps.ControlPosition.LEFT_TOP;
       const zoomOutToShowEarth = { zoom: 1, center: { lat: 0, lng: 0 } };
@@ -485,13 +485,11 @@ class SearchMapWithGoogleMaps extends Component {
         fullscreenControl: false,
         clickableIcons: false,
         streetViewControl: false,
-
         cameraControlOptions: {
           position: controlPosition,
         },
-
-        // Add default viewport (the whole world)
         ...zoomAndCenter,
+        ...options, // <-- Merge in options from parent
       };
 
       this.map = new maps.Map(this.state.mapContainer, mapConfig);
@@ -501,6 +499,7 @@ class SearchMapWithGoogleMaps extends Component {
       });
     }
   }
+    // Skyfarer
 
   onMount(element) {
     this.setState({ mapContainer: element });
