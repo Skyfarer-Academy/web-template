@@ -486,7 +486,7 @@ class SearchMapWithGoogleMaps extends Component {
         mapTypeControl: false,
         scrollwheel: false,
         fullscreenControl: false,
-        clickableIcons: true,
+        clickableIcons: false,
         streetViewControl: false,
         zoomControl: true,
         zoomControlOptions: {
