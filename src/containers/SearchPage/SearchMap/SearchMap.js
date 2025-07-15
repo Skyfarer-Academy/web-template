@@ -73,7 +73,7 @@ export class SearchMapComponent extends Component {
 
     // Default USA center and zoom to show the whole country
     this.defaultCenter = { lat: 39.8283, lng: -98.5795 }; // Geographic center of USA
-    this.defaultZoom = 1; // Zoom level to show most of the USA
+    this.defaultZoom = 2; // Zoom level to show most of the USA
 
     this.state = { 
       infoCardOpen: null, 
