@@ -168,8 +168,8 @@ export class SearchMapComponent extends Component {
   onMapLoadHandler(map) {
     this.mapRef = map;
 
-    if (this.mapRef && this.state.mapReattachmentCount === 0) {
-      // map is ready, let's fit search area's bounds to map's viewport
+    // Only fit bounds if bounds is defined and you want to use it
+    if (this.mapRef && this.state.mapReattachmentCount === 0 && this.props.bounds) {
       const fitMapToBounds = getFitMapToBounds(this.props.config.maps.mapProvider);
       fitMapToBounds(this.mapRef, this.props.bounds, { padding: 0, isAutocompleteSearch: true });
     }
@@ -248,16 +248,6 @@ export class SearchMapComponent extends Component {
           reusableMapHiddenHandle={REUSABLE_MAP_HIDDEN_HANDLE}
           zoom={zoom}
           config={config}
-          // Skyfarer
-          // Add Google Maps options for scroll-to-zoom and always-on controls
-          options={{
-            scrollwheel: true,
-            zoomControl: true,
-            mapTypeControl: true,
-            fullscreenControl: true,
-            streetViewControl: true,
-          }}
-
           // Skyfarer
         />
       </ReusableMapContainer>
