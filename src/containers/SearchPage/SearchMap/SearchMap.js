@@ -70,11 +70,11 @@ export class SearchMapComponent extends Component {
         window.mapReattachmentCount = 0;
       }
     }
-
+    // Skyfarer
     // Default USA center and zoom to show the whole country
     this.defaultCenter = { lat: 39.8283, lng: -98.5795 }; // Geographic center of USA
     this.defaultZoom = 2; // Zoom level to show most of the USA
-
+    // Skyfarer
     this.state = { 
       infoCardOpen: null, 
       mapReattachmentCount,
@@ -90,6 +90,7 @@ export class SearchMapComponent extends Component {
     this.onMapLoadHandler = this.onMapLoadHandler.bind(this);
   }
 
+  // Skyfarer
   componentDidMount() {
     // Try to get browser geolocation
     if (navigator.geolocation) {
@@ -121,6 +122,7 @@ export class SearchMapComponent extends Component {
       });
     }
   }
+// Skyfarer
 
   componentWillUnmount() {
     this.listings = [];
@@ -246,6 +248,16 @@ export class SearchMapComponent extends Component {
           reusableMapHiddenHandle={REUSABLE_MAP_HIDDEN_HANDLE}
           zoom={zoom}
           config={config}
+          // Skyfarer
+          // Always show map controls for moving the map on desktop
+          options={{
+            scrollwheel: true,
+            zoomControl: true,
+            mapTypeControl: true,
+            fullscreenControl: true,
+            streetViewControl: true,
+          }}
+          // Skyfarer
         />
       </ReusableMapContainer>
     ) : (
