@@ -489,13 +489,10 @@ class SearchMapWithGoogleMaps extends Component {
         clickableIcons: true,
         streetViewControl: false,
         zoomControl: true,
-        cameraControl: false,
         zoomControlOptions: {
-        position: window.google.maps.ControlPosition.TOP_LEFT,
+          position: window.google.maps.ControlPosition.RIGHT_BOTTOM,
         },
-        cameraControlOptions: {
-          position: controlPosition,
-        },
+        // Remove cameraControl and cameraControlOptions if not needed
         ...zoomAndCenter,
         ...options, // <-- Merge in options from parent
       };
