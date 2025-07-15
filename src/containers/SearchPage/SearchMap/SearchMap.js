@@ -249,7 +249,7 @@ export class SearchMapComponent extends Component {
           zoom={zoom}
           config={config}
           // Skyfarer
-          // Always show map controls for moving the map on desktop
+          // Add Google Maps options for scroll-to-zoom and always-on controls
           options={{
             scrollwheel: true,
             zoomControl: true,
@@ -257,6 +257,7 @@ export class SearchMapComponent extends Component {
             fullscreenControl: true,
             streetViewControl: true,
           }}
+
           // Skyfarer
         />
       </ReusableMapContainer>
