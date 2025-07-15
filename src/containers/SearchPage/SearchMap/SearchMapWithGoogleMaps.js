@@ -483,18 +483,17 @@ class SearchMapWithGoogleMaps extends Component {
         // Disable all controls except zoom
         // https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
         disableDefaultUI: true,
+        ...zoomAndCenter,
+        ...options, // Parent options first, so our settings always override
         mapTypeControl: false,
-        scrollwheel: false,
         fullscreenControl: false,
-        clickableIcons: false,
         streetViewControl: false,
         zoomControl: true,
         zoomControlOptions: {
           position: window.google.maps.ControlPosition.RIGHT_BOTTOM,
         },
-        // Remove cameraControl and cameraControlOptions if not needed
-        ...zoomAndCenter,
-        ...options, // <-- Merge in options from parent
+        clickableIcons: false,
+        scrollwheel: options.scrollwheel ?? false, // allow scrollwheel if parent wants it
       };
 
       this.map = new maps.Map(this.state.mapContainer, mapConfig);
