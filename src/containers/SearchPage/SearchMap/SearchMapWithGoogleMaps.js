@@ -473,7 +473,7 @@ class SearchMapWithGoogleMaps extends Component {
     const hasDimensions = offsetHeight > 0 && offsetWidth > 0;
     // Skyfarer
     if (hasDimensions) {
-      const { bounds, center = new sdkTypes.LatLng(0, 0), zoom = 11, options = {} } = this.props;
+      const { bounds, center = new sdkTypes.LatLng(0, 0), zoom = 2, options = {} } = this.props;
       const maps = window.google.maps;
       const controlPosition = maps.ControlPosition.LEFT_TOP;
       const zoomOutToShowEarth = { zoom: 2, center: { lat: 39.8283, lng: -98.5795 } };
