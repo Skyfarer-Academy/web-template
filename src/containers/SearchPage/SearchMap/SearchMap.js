@@ -100,7 +100,7 @@ export class SearchMapComponent extends Component {
           // Zoom level 6-7 shows multiple states
           this.setState({
             center: { lat: latitude, lng: longitude },
-            zoom: 6,
+            zoom: 5,
             locationInitialized: true,
           });
         },
