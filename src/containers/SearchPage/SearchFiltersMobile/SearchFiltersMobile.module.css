@@ -1,24 +1,22 @@
-@import '../../../styles/customMediaQueries.css';
-
+/* Root container for the filter bar */
 .root {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background-color: var(--colorGrey50);
 
-  /* sticky result summary in mobile */
-  position: sticky;
+  position: sticky; /* keeps filter bar at top */
   top: 0;
-  z-index: 1;
+  z-index: 10;      /* above listings but below modal */
 }
 
+/* Search results summary inside filter bar */
 .searchResultSummary {
   composes: h3 from global;
   margin-top: 6px;
 
   display: flex;
   justify-content: space-between;
-
   background-color: var(--colorGrey50);
 
   @media (--viewportMedium) {
@@ -26,16 +24,16 @@
   }
 }
 
+/* Buttons container in the filter bar */
 .buttons {
   display: flex;
+  gap: 8px;
 }
 
+/* Map icon button */
 .mapIcon {
-  /* Font */
   composes: marketplaceTinyFontStyles from global;
   font-weight: var(--fontWeightMedium);
-
-  /* background map image */
   background-image: url(./images/map_icon216x105.png);
   background-size: cover;
 
@@ -46,64 +44,75 @@
   margin: 0;
 }
 
+/* Modal overlay container */
 .modalContainer {
-  width: 100%;
-  padding: 94px 0;
-  margin: 0 24px;
+  position: fixed;   /* ensures overlay is always on top */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;     /* above all content */
+  background-color: var(--colorWhite);
+  padding: 94px 24px 220px; /* top padding for header + bottom for show listings */
+  padding-bottom: 220px;
+
+  overflow-y: auto;   /* allow scrolling if content is taller than screen */
 }
 
+/* Modal heading wrapper */
 .modalHeadingWrapper {
   padding-bottom: 31px;
   border-bottom: 1px solid var(--colorGrey100);
+  position: sticky;   /* optional: keep heading visible inside modal */
+  top: 0;
+  background-color: var(--colorWhite);
+  z-index: 1001;
 }
 
+/* Modal heading text */
 .modalHeading {
   composes: h1 from global;
   margin-top: 0;
 }
 
+/* Reset all button */
 .resetAllButton {
   composes: h5 from global;
   font-weight: var(--fontWeightMedium);
   color: var(--colorGrey300);
-
-  /* Layout */
   display: inline;
   float: right;
   margin: 8px 0 0 0;
   padding: 0;
-
-  /* Override button styles */
   outline: none;
-  text-align: left;
   border: none;
-
-  &:focus,
-  &:hover {
-    color: var(--colorGrey700);
-  }
+  text-align: left;
 }
 
+.resetAllButton:hover,
+.resetAllButton:focus {
+  color: var(--colorGrey700);
+}
+
+/* Filters wrapper inside modal */
 .filtersWrapper {
-  /* add bottom margin so that the last filter won't be hidden
-   * under the mobile safari bottom bar or the "Show results"
-   * button bar */
-  padding-bottom: 220px;
+  padding-bottom: 220px; /* ensures last filter not hidden under show listings button */
+  z-index: 1001;          /* above modal background */
 }
 
+/* Show Listings button at bottom of modal */
 .showListingsContainer {
   position: fixed;
   bottom: 0;
   left: 0;
-
   width: 100vw;
   padding: 18px 24px;
-
   background: var(--colorWhite);
   box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.1);
-  z-index: 11;
+  z-index: 1002; /* above filtersWrapper */
 }
 
+/* Show Listings button style */
 .showListingsButton {
   background-color: var(--marketplaceColor);
   display: inline-block;
