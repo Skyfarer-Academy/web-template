@@ -64,7 +64,7 @@
   padding-bottom: 31px;
   border-bottom: 1px solid var(--colorGrey100);
   position: sticky;   /* optional: keep heading visible inside modal */
-  top: 0;
+  top: 1;
   background-color: var(--colorWhite);
   z-index: 1001;
 }
