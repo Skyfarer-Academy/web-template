@@ -1,5 +1,3 @@
-console.log("This file is responsible for mobile and desktop layout");
-
 import intersection from 'lodash/intersection';
 
 import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM } from '../../util/types';
