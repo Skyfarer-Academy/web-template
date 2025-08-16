@@ -28,6 +28,8 @@ import {
 
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 
+import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
+
 import css from './ProductOrderForm.module.css';
 
 const { Money } = sdkTypes;
@@ -373,6 +375,8 @@ const renderForm = formRenderProps => {
           />
         </div>
       ) : null}
+
+      <FetchLineItemsError error={fetchLineItemsError} />
 
       <div className={css.submitButton}>
         <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>

@@ -343,6 +343,7 @@ export class TransactionPanelComponent extends Component {
       sendMessageInProgress,
       sendMessageError,
       onOpenDisputeModal,
+      showListingImage,
       intl,
       stateData = {},
       showBookingLocation = false,
@@ -441,6 +442,7 @@ export class TransactionPanelComponent extends Component {
               image={firstImage}
               provider={provider}
               isCustomer={isCustomer}
+              showListingImage={showListingImage}
               listingImageConfig={config.layout.listingImage}
               transaction={transaction} // [SKYFARER]
             />
@@ -588,11 +590,13 @@ export class TransactionPanelComponent extends Component {
                   image={firstImage}
                   provider={provider}
                   isCustomer={isCustomer}
+                  showListingImage={showListingImage}
                   listingImageConfig={config.layout.listingImage}
                 />
 
                 <DetailCardHeadingsMaybe
                   showDetailCardHeadings={showDetailCardHeadings}
+                  showListingImage={showListingImage}
                   listingTitle={
                     listingDeleted ? (
                       listingTitle

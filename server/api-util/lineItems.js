@@ -1,9 +1,9 @@
 const {
   calculateQuantityFromDates,
   calculateQuantityFromHours,
-  calculateTotalFromLineItems,
   calculateShippingFee,
-  hasCommissionPercentage,
+  getProviderCommissionMaybe,
+  getCustomerCommissionMaybe,
 } = require('./lineItemHelpers');
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
@@ -232,77 +232,80 @@ exports.transactionLineItems = async (listing, orderData, providerCommission, cu
     return -1 * percentage;
   };
 
+  // [SKYFARER] TODO: this is commented out, some functions are missing in the latest merge and vouchers aren't used anymore anyway
   // Note: extraLineItems for product selling (aka shipping fee)
   // is not included in either customer or provider commission calculation.
 
   // The provider commission is what the provider pays for the transaction, and
   // it is the subtracted from the order price to get the provider payout:
   // orderPrice - providerCommission = providerPayout
-  const providerCommissionMaybe = hasCommissionPercentage(providerCommission)
-    ? [
-        {
-          code: 'line-item/provider-commission',
-          unitPrice: calculateTotalFromLineItems([order]),
-          percentage: getNegation(providerCommission.percentage),
-          includeFor: ['provider'],
-        },
-      ]
-    : [];
 
-  // The customer commission is what the customer pays for the transaction, and
-  // it is added on top of the order price to get the customer's payin price:
-  // orderPrice + customerCommission = customerPayin
-  const customerCommissionMaybe = hasCommissionPercentage(customerCommission)
-    ? [
-        {
-          code: 'line-item/customer-commission',
-          unitPrice: calculateTotalFromLineItems([order]),
-          percentage: customerCommission.percentage,
-          includeFor: ['customer'],
-        },
-      ]
-    : [];
+  // const providerCommissionMaybe = hasCommissionPercentage(providerCommission)
+  //   ? [
+  //       {
+  //         code: 'line-item/provider-commission',
+  //         unitPrice: calculateTotalFromLineItems([order]),
+  //         percentage: getNegation(providerCommission.percentage),
+  //         includeFor: ['provider'],
+  //       },
+  //     ]
+  //   : [];
 
-  if (orderData.voucherCode) { // [SKYFARER]
-    try {
-      const voucher = await Voucherify.vouchers.get(orderData.voucherCode);
+  // // The customer commission is what the customer pays for the transaction, and
+  // // it is added on top of the order price to get the customer's payin price:
+  // // orderPrice + customerCommission = customerPayin
+  // const customerCommissionMaybe = hasCommissionPercentage(customerCommission)
+  //   ? [
+  //       {
+  //         code: 'line-item/customer-commission',
+  //         unitPrice: calculateTotalFromLineItems([order]),
+  //         percentage: customerCommission.percentage,
+  //         includeFor: ['customer'],
+  //       },
+  //     ]
+  //   : [];
 
-      switch (voucher?.discount?.type) {
-        case 'PERCENT':
-          if (voucher.discount.effect === 'APPLY_TO_ORDER') {
-            extraLineItems.push({
-              code: `line-item/${voucher.campaign?.replace(/ /g, '-') || 'promo-discount'}`,
-              unitPrice: calculateTotalFromLineItems([order]),
-              percentage: getNegation(voucher.discount.percent_off),
-              includeFor: ['customer', 'provider'],
-            }); break;
-          }
-        case 'AMOUNT':
-          if (voucher.discount.effect === 'APPLY_TO_ORDER') {
-            const code = voucher.campaign
-              ? `line-item/voucher-${voucher.campaign?.replace(/ /g, '-') || 'promo-discount'}`
-              : `line-item/voucher-${voucher.code.replace(/ /g, '-')}`;
-            extraLineItems.push({
-              code,
-              unitPrice: new Money(getNegation(voucher.discount.amount_off), currency),
-              quantity: 1,
-              includeFor: ['customer', 'provider'],
-            }); break;
-          }
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
+  // if (orderData.voucherCode) { // [SKYFARER]
+  //   try {
+  //     const voucher = await Voucherify.vouchers.get(orderData.voucherCode);
+
+  //     switch (voucher?.discount?.type) {
+  //       case 'PERCENT':
+  //         if (voucher.discount.effect === 'APPLY_TO_ORDER') {
+  //           extraLineItems.push({
+  //             code: `line-item/${voucher.campaign?.replace(/ /g, '-') || 'promo-discount'}`,
+  //             unitPrice: calculateTotalFromLineItems([order]),
+  //             percentage: getNegation(voucher.discount.percent_off),
+  //             includeFor: ['customer', 'provider'],
+  //           }); break;
+  //         }
+  //       case 'AMOUNT':
+  //         if (voucher.discount.effect === 'APPLY_TO_ORDER') {
+  //           const code = voucher.campaign
+  //             ? `line-item/voucher-${voucher.campaign?.replace(/ /g, '-') || 'promo-discount'}`
+  //             : `line-item/voucher-${voucher.code.replace(/ /g, '-')}`;
+  //           extraLineItems.push({
+  //             code,
+  //             unitPrice: new Money(getNegation(voucher.discount.amount_off), currency),
+  //             quantity: 1,
+  //             includeFor: ['customer', 'provider'],
+  //           }); break;
+  //         }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw error;
+  //   }
+  // }
+  // [/SKYFARER]
 
   // Let's keep the base price (order) as first line item and provider and customer commissions as last.
   // Note: the order matters only if OrderBreakdown component doesn't recognize line-item.
   const lineItems = [
     order,
     ...extraLineItems,
-    ...providerCommissionMaybe,
-    ...customerCommissionMaybe,
+    ...getProviderCommissionMaybe(providerCommission, order, priceAttribute),
+    ...getCustomerCommissionMaybe(customerCommission, order, priceAttribute),
   ];
 
   return lineItems;
