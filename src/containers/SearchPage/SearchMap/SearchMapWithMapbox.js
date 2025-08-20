@@ -1,3 +1,5 @@
+//console.log("This filee renders the  map");
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import differenceBy from 'lodash/differenceBy';
@@ -470,6 +472,17 @@ class SearchMapWithMapbox extends Component {
       }
     }
 
+    const CurrentInfoCardMaybe = props => {
+      const { mapContainer, currentInfoCard, config } = props;
+      const shouldRender = mapContainer && currentInfoCard;
+      const { key, ...componentProps } = shouldRender ? currentInfoCard?.componentProps : {};
+      return shouldRender
+        ? ReactDOM.createPortal(
+            <SearchMapInfoCard key={key} {...componentProps} config={config} />,
+            currentInfoCard.markerContainer
+          )
+        : null;
+    };
     return (
       <div
         id={id}
@@ -506,12 +519,11 @@ class SearchMapWithMapbox extends Component {
           }
           return null;
         })}
-        {this.state.mapContainer && this.currentInfoCard
-          ? ReactDOM.createPortal(
-              <SearchMapInfoCard {...this.currentInfoCard.componentProps} config={config} />,
-              this.currentInfoCard.markerContainer
-            )
-          : null}
+        <CurrentInfoCardMaybe
+          mapContainer={this.state.mapContainer}
+          currentInfoCard={this.currentInfoCard}
+          config={config}
+        />
       </div>
     );
   }

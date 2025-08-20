@@ -11,6 +11,8 @@ import {
   DATE_TYPE_DATETIME,
   DATE_TYPE_TIME,
   LINE_ITEM_CUSTOMER_COMMISSION,
+  LINE_ITEM_FIXED,
+  LINE_ITEM_HOUR,
   LINE_ITEM_PROVIDER_COMMISSION,
   LISTING_UNIT_TYPES,
   propTypes,
@@ -38,7 +40,6 @@ export const OrderBreakdownComponent = props => {
     userRole,
     transaction,
     booking,
-    dateType,
     timeZone,
     currency,
     marketplaceName,
@@ -53,8 +54,11 @@ export const OrderBreakdownComponent = props => {
   const unitLineItem = lineItems.find(
     item => LISTING_UNIT_TYPES.includes(item.code) && !item.reversal
   );
-  // Line-item code that matches with base unit: day, night, hour, item
+  // Line-item code that matches with base unit: day, night, hour, fixed, item
   const lineItemUnitType = unitLineItem?.code;
+  const dateType = [LINE_ITEM_HOUR, LINE_ITEM_FIXED].includes(lineItemUnitType)
+    ? DATE_TYPE_DATETIME
+    : DATE_TYPE_DATE;
 
   const hasCommissionLineItem = lineItems.find(item => {
     const hasCustomerCommission = isCustomer && item.code === LINE_ITEM_CUSTOMER_COMMISSION;
@@ -108,6 +112,33 @@ export const OrderBreakdownComponent = props => {
         dateType={dateType}
         timeZone={timeZone}
       />
+
+      {/* Adjustment Section */}
+      {/* {transaction?.attributes?.metadata?.adjustment && (
+        <div className={css.adjustmentSection} style={{ background: '#fffbe6', border: '1px solid #ffe58f', borderRadius: 4, padding: 16, margin: '16px 0' }}>
+          <strong>Adjustment</strong>
+          <div style={{ marginTop: 8 }}>
+            <div>
+              <span style={{ fontWeight: 500 }}>Previous hours:</span> {booking?.attributes?.hours ?? 'N/A'}
+            </div>
+            <div>
+              <span style={{ fontWeight: 500 }}>Previous price:</span> {typeof booking?.attributes?.price?.amount === 'number' ? (booking.attributes.price.amount / 100).toFixed(2) : 'N/A'}
+            </div>
+            <div>
+              <span style={{ fontWeight: 500 }}>New hours:</span> {transaction.attributes.metadata.adjustment.newHours ?? 'N/A'}
+            </div>
+            <div>
+              <span style={{ fontWeight: 500 }}>New price:</span> {typeof transaction.attributes.metadata.adjustment.newPrice === 'number' ? (transaction.attributes.metadata.adjustment.newPrice / 100).toFixed(2) : 'N/A'}
+            </div>
+            <div>
+              <span style={{ fontWeight: 500 }}>Difference:</span> {typeof transaction.attributes.metadata.adjustment.diff === 'number' ? (transaction.attributes.metadata.adjustment.diff / 100).toFixed(2) : 'N/A'}
+            </div>
+            <div>
+              <span style={{ fontWeight: 500 }}>Adjusted at:</span> {transaction.attributes.metadata.adjustment.adjustedAt ? new Date(transaction.attributes.metadata.adjustment.adjustedAt).toLocaleString() : 'N/A'}
+            </div>
+          </div>
+        </div>
+      )} */}
 
       {transaction?.attributes?.metadata?.rescheduleRequest && (
         <div className={css.rescheduleRequest}>

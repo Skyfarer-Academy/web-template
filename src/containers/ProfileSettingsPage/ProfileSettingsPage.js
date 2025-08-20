@@ -11,6 +11,7 @@ import {
   initialValuesForUserFields,
   isUserAuthorized,
   pickUserFieldsData,
+  showCreateListingLinkForUser,
 } from '../../util/userHelpers';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
@@ -33,7 +34,7 @@ import {
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 import { setCurrentPathnameAndInitiateAuth } from '../../util/editListingHelpers';
 import { googleAuthSelector, InitiateGoogleAuth } from '../../ducks/googleCalendar.duck';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // [/SKYFARER]
 
 const onImageUploadHandler = (values, fn) => {
@@ -199,13 +200,18 @@ export const ProfileSettingsPageComponent = props => {
 
   const title = intl.formatMessage({ id: 'ProfileSettingsPage.title' });
 
+  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
+
   return (
     <Page className={css.root} title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSingleColumn
         topbar={
           <>
             <TopbarContainer />
-            <UserNav currentPage="ProfileSettingsPage" />
+            <UserNav
+              currentPage="ProfileSettingsPage"
+              showManageListingsLink={showManageListingsLink}
+            />
           </>
         }
         footer={<FooterContainer />}

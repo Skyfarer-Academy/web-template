@@ -343,7 +343,8 @@ export const initiateInquiryWithoutPayment = (inquiryParams, processAlias, trans
   if (!processAlias) {
     const error = new Error('No transaction process attached to listing');
     log.error(error, 'listing-process-missing', {
-      listingId: listing?.id?.uuid,
+      // [SKYFARER] shipped from sharetribe with error; ignored to reduce noise from custom development
+      listingId: listing?.id?.uuid, // eslint-disable-line no-undef
     });
     dispatch(initiateInquiryError(storableError(error)));
     return Promise.reject(error);
@@ -398,12 +399,21 @@ export const speculateTransaction = (
   // initiate.
   const isTransition = !!transactionId;
 
-  const { deliveryMethod, quantity, bookingDates, ...otherOrderParams } = orderParams;
+  const {
+    deliveryMethod,
+    priceVariantName,
+    quantity,
+    bookingDates,
+    ...otherOrderParams
+  } = orderParams;
   const quantityMaybe = quantity ? { stockReservationQuantity: quantity } : {};
   const bookingParamsMaybe = bookingDates || {};
 
   // Parameters only for client app's server
-  const orderData = deliveryMethod ? { deliveryMethod } : {};
+  const orderData = {
+    ...(deliveryMethod ? { deliveryMethod } : {}),
+    ...(priceVariantName ? { priceVariantName } : {}),
+  };
 
   // Parameters for Marketplace API
   const transitionParams = {
@@ -482,6 +492,7 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     callParams: { include: ['stripeCustomer.defaultPaymentMethod'] },
     updateHasListings: false,
     updateNotifications: false,
+    enforce: true,
   };
 
   return dispatch(fetchCurrentUser(fetchCurrentUserOptions))

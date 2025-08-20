@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
+import { useConfiguration } from '../../context/configurationContext.js';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { ensureCurrentUser, ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
 import { propTypes } from '../../util/types';
+import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers.js';
 import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
 import { handleCardSetup } from '../../ducks/stripe.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
@@ -43,6 +45,7 @@ const PaymentMethodsPageComponent = props => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cardState, setCardState] = useState(null);
   const intl = useIntl();
+  const config = useConfiguration();
 
   const {
     currentUser,
@@ -150,7 +153,7 @@ const PaymentMethodsPageComponent = props => {
     ? `${ensuredCurrentUser.attributes.profile.firstName} ${ensuredCurrentUser.attributes.profile.lastName}`
     : null;
 
-  const initalValuesForStripePayment = { name: userName };
+  const initialValuesForStripePayment = { name: userName };
 
   const card = hasDefaultPaymentMethod
     ? ensurePaymentMethodCard(currentUser.stripeCustomer.defaultPaymentMethod).attributes.card
@@ -158,6 +161,15 @@ const PaymentMethodsPageComponent = props => {
 
   const showForm = cardState === 'replaceCard' || !hasDefaultPaymentMethod;
   const showCardDetails = !!hasDefaultPaymentMethod;
+
+  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
+  const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
+  const accountSettingsNavProps = {
+    currentPage: 'PaymentMethodsPage',
+    showPaymentMethods,
+    showPayoutDetails,
+  };
+
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
@@ -167,12 +179,15 @@ const PaymentMethodsPageComponent = props => {
               desktopClassName={css.desktopTopbar}
               mobileClassName={css.mobileTopbar}
             />
-            <UserNav currentPage="PaymentMethodsPage" />
+            <UserNav
+              currentPage="PaymentMethodsPage"
+              showManageListingsLink={showManageListingsLink}
+            />
           </>
         }
         sideNav={null}
         useAccountSettingsNav
-        currentPage="PaymentMethodsPage"
+        accountSettingsNavProps={accountSettingsNavProps}
         footer={<FooterContainer />}
       >
         <div className={css.content}>
@@ -194,7 +209,7 @@ const PaymentMethodsPageComponent = props => {
                 <PaymentMethodsForm
                   className={css.paymentForm}
                   formId="PaymentMethodsForm"
-                  initialValues={initalValuesForStripePayment}
+                  initialValues={initialValuesForStripePayment}
                   onSubmit={handleSubmit}
                   handleRemovePaymentMethod={handleRemovePaymentMethod}
                   hasDefaultPaymentMethod={hasDefaultPaymentMethod}

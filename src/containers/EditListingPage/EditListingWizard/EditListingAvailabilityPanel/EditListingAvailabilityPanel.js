@@ -240,7 +240,7 @@ const EditListingAvailabilityPanel = props => {
     return onSubmit(createAvailabilityPlan(values))
       .then(() => {
         dispatch( // [SKYFARER]
-          requestAddWeeklyAvailabilityException(listingId?.uuid, values, currentUser?.id?.uuid)
+          requestAddWeeklyAvailabilityException(listing.id, values, currentUser?.id?.uuid)
         );
         setIsEditPlanModalOpen(false);
       })
@@ -310,6 +310,10 @@ const EditListingAvailabilityPanel = props => {
           <p>
             <FormattedMessage id="EditListingAvailabilityPanel.disconnectGoogleCalendar" />
           </p>
+          <p>
+            <strong><em><FormattedMessage id="EditListingAvailabilityPanel.connectWithGoogleCalendarbold" /></em></strong><br/>
+            <FormattedMessage id="EditListingAvailabilityPanel.connectWithGoogleUserConfusion" />
+          </p>
           <Button
             inProgress={disconnectGoogleInProgress}
             className={css.googleConnectButton}
@@ -322,7 +326,11 @@ const EditListingAvailabilityPanel = props => {
       ) : (
         <div className={css.planInfo}>
           <p>
+            <strong><em><FormattedMessage id="EditListingAvailabilityPanel.connectWithGoogleCalendarbold" /></em></strong><br/>
             <FormattedMessage id="EditListingAvailabilityPanel.connectWithGoogle" />
+          </p>
+          <p>
+            <FormattedMessage id="EditListingAvailabilityPanel.connectWithGoogleUserConfusion" />
           </p>
           <Button
             inProgress={authInProgress}

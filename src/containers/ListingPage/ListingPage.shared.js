@@ -161,6 +161,74 @@ export const handleSubmitInquiry = parameters => values => {
     });
 };
 
+/* If the user is not logged in, 
+we redirect them to the signup page, and otherwise we toggle the listing id in their favorites list.*/ 
+
+export const handleToggleFavorites = parameters => (isFavorite, listingId) => {
+  const { currentUser, routes, location, history } = parameters;
+
+  // Use safe fallback for current location
+  const currentLocation = location ? location.pathname : '/';
+  const search = location?.search || '';
+  const hash = location?.hash || '';
+
+  // Redirect unauthenticated users to signup
+  if (!currentUser) {
+    const state = { from: currentLocation + search + hash };
+    history.push(
+      createResourceLocatorString('SignupPage', routes, {}, {}),
+      state
+    );
+    return;
+  }
+
+  // Extract favorites safely
+  const { params, onUpdateFavorites } = parameters;
+  const profile = currentUser.attributes?.profile || {};
+  const favorites = profile.privateData?.favorites || [];
+
+  // Resolve a valid listing ID
+  let resolvedListingId = null;
+
+  if (listingId) {
+    resolvedListingId = listingId;
+  } else if (params?.id) {
+    resolvedListingId = params.id;
+  }
+
+  if (!resolvedListingId) {
+    console.error('❌ handleToggleFavorites: No valid listing ID found.', { listingId, params });
+    return;
+  }
+
+  /*console.log('✅ handleToggleFavorites called with:', {
+    currentUserId: currentUser.id?.uuid || currentUser.id,
+    resolvedListingId,
+    isFavorite,
+    favorites,
+  });*/
+
+  let updatedFavorites;
+  if (isFavorite) {
+    // Remove from favorites
+    updatedFavorites = favorites.filter(f => f !== resolvedListingId);
+  } else {
+    // Add to favorites (avoid duplicates)
+    updatedFavorites = [...new Set([...favorites, resolvedListingId])];
+  }
+
+  const payload = {
+    privateData: {
+      favorites: updatedFavorites,
+    },
+  };
+
+  onUpdateFavorites(payload);
+};
+
+
+
+
 /**
  * Handle order submit from OrderPanel.
  *
@@ -186,6 +254,7 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
     bookingEndTime,
     bookingStartDate, // not relevant (omit)
     bookingEndDate, // not relevant (omit)
+    priceVariantName, // relevant for bookings
     quantity: quantityRaw,
     seats: seatsRaw,
     deliveryMethod,
@@ -207,6 +276,8 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
         },
       }
     : {};
+  // priceVariantName is relevant for bookings
+  const priceVariantNameMaybe = priceVariantName ? { priceVariantName } : {};
   const quantity = Number.parseInt(quantityRaw, 10);
   const quantityMaybe = Number.isInteger(quantity) ? { quantity } : {};
   const seats = Number.parseInt(seatsRaw, 10);
@@ -217,6 +288,7 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
     listing,
     orderData: {
       ...bookingMaybe,
+      ...priceVariantNameMaybe,
       ...quantityMaybe,
       ...seatsMaybe,
       ...deliveryMethodMaybe,

@@ -31,7 +31,7 @@
  *    - indexForSearch (optional):    If set as true, it is assumed that the extended data key has
  *                                    search index in place. I.e. the key can be used to filter
  *                                    listing queries (then scope needs to be 'public').
- *                                    Note: Flex CLI can be used to set search index for the key:
+ *                                    Note: Sharetribe CLI can be used to set search index for the key:
  *                                    https://www.sharetribe.com/docs/references/extended-data/#search-schema
  *                                    Read more about filtering listings with public data keys from API Reference:
  *                                    https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
@@ -255,6 +255,9 @@ export const listingFields = [
  *                        considered per person (seat = 1).
  *                        Possible values: 'oneSeat' and 'multipleSeats'.
  *                        Default: 'oneSeat'.
+ * - priceVariations      This is relevant only to listings using default-booking process.
+ *   - enabled:             If set to true, price variations are enabled.
+ *                          Default: false.
  * - defaultListingFields These are tied to transaction processes. Different processes have different flags.
  *                        E.g. default-inquiry can toggle price and location to true/false value to indicate,
  *                        whether price (or location) tab should be shown. If defaultListingFields.price is not

@@ -7,10 +7,14 @@ import { Form as FinalForm, FormSpy } from 'react-final-form';
 // import { VoucherifyValidate } from '@voucherify/react-widget';
 import { VoucherifyValidate } from '@mathiscode/voucherify-react-widget';
 
+import Logo from '../../../assets/logo-icon.png';
+
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
 import { numberAtLeast, required } from '../../../util/validators';
 import { PURCHASE_PROCESS_NAME } from '../../../transactions/transaction';
+import { formatMoney } from '../../../util/currency';
+import { types as sdkTypes } from '../../../util/sdkLoader';
 
 import {
   Form,
@@ -25,6 +29,8 @@ import {
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 
 import css from './ProductOrderForm.module.css';
+
+const { Money } = sdkTypes;
 
 // Browsers can't render huge number of select options.
 // (stock is shown inside select element)

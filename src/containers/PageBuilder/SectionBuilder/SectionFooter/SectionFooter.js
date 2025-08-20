@@ -8,6 +8,11 @@ import BlockBuilder from '../../BlockBuilder';
 import SectionContainer from '../SectionContainer';
 import css from './SectionFooter.module.css';
 
+// [SKYFARER]
+import appPackage from '../../../../../package.json';
+const APP_VERSION = appPackage.version;
+// [/SKYFARER]
+
 // The number of columns (numberOfColumns) affects styling
 
 const GRID_CONFIG = [
@@ -136,6 +141,10 @@ const SectionFooter = props => {
                 <BlockBuilder blocks={linksWithBlockId} sectionId={sectionId} options={options} />
               </div>
             ) : null}
+            {/* SKYFARER +version */}
+           {APP_VERSION && process.env.NODE_ENV === 'development' && (
+               <span style={{ fontSize: '12px', color: 'gray', marginRight: '5px' }}>{`v${APP_VERSION || '?.?.?'}`}</span>
+             )}
             <Field data={copyright} className={css.copyright} />
           </div>
           <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
