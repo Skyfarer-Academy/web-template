@@ -209,6 +209,7 @@ export const ProfileSettingsPageComponent = props => {
           <>
             <TopbarContainer />
             <UserNav
+              currentUser={currentUser} 
               currentPage="ProfileSettingsPage"
               showManageListingsLink={showManageListingsLink}
             />

@@ -85,6 +85,7 @@ export const PasswordChangePageComponent = props => {
               mobileClassName={css.mobileTopbar}
             />
             <UserNav
+              currentUser={currentUser} 
               currentPage="PasswordChangePage"
               showManageListingsLink={showManageListingsLink}
             />
