@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import { FormattedMessage, intlShape } from '../../../../util/reactIntl';
 import { isInstructor } from '../../../../util/skyfarer';
+import { hasPermissionToPostListings } from '../../../../util/userHelpers';
 
 import {
   ACCOUNT_SETTINGS_PAGES
@@ -57,6 +58,20 @@ const LoginLink = () => {
     <NamedLink name="LoginPage" className={css.topbarLink}>
       <span className={css.topbarLinkLabel}>
         <FormattedMessage id="TopbarDesktop.login" />
+      </span>
+    </NamedLink>
+  );
+};
+
+const AddListingButton = ({ currentUser }) => {
+  if (!currentUser || !hasPermissionToPostListings(currentUser)) 
+    {
+    return null;
+  }
+  return (
+      <NamedLink name="NewListingPage" className={css.topbarLink} >
+      <span className={css.topbarLinkLabel}>
+        <FormattedMessage id="TopbarDesktop.postNewTraining" defaultMessage="Add New Training" />
       </span>
     </NamedLink>
   );
@@ -184,6 +199,10 @@ const TopbarDesktop = props => {
   //   <InstructorMatchingButtonLink/>
   // ) : null;
   const instructorMatchingButtonLinkMaybe = null;
+  
+  const addListingLinkMaybe = currentUser && hasPermissionToPostListings(currentUser) ? (
+  <AddListingButton currentUser={currentUser} />
+  ) : null;
 
   const inboxLinkMaybe = authenticatedOnClientSide ? (
     <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
@@ -238,6 +257,7 @@ const TopbarDesktop = props => {
 
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
+      {addListingLinkMaybe}
       {inboxLinkMaybe}
       {profileMenuMaybe}
       {signupLinkMaybe}
