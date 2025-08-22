@@ -71,7 +71,7 @@ const AddListingButton = ({ currentUser }) => {
   return (
       <NamedLink name="NewListingPage" className={css.topbarLink} >
       <span className={css.topbarLinkLabel}>
-        <FormattedMessage id="TopbarDesktop.postNewTraining" defaultMessage="Add New Training" />
+        <FormattedMessage id="TopbarDesktop.createListing" defaultMessage="Add a new Listing" />
       </span>
     </NamedLink>
   );
@@ -102,7 +102,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {showManageListingsLink ? (
+        {showManageListingsLink && isInstructor(currentUser) ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -200,7 +200,7 @@ const TopbarDesktop = props => {
   // ) : null;
   const instructorMatchingButtonLinkMaybe = null;
   
-  const addListingLinkMaybe = currentUser && hasPermissionToPostListings(currentUser) ? (
+  const addListingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
   <AddListingButton currentUser={currentUser} />
   ) : null;
 
@@ -246,6 +246,7 @@ const TopbarDesktop = props => {
       />
       {searchFormMaybe}
 
+      {addListingLinkMaybe}
       <CustomLinksMenu
         currentPage={currentPage}
         currentUser={currentUser}
@@ -253,11 +254,10 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-      />
+        />
 
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
-      {addListingLinkMaybe}
       {inboxLinkMaybe}
       {profileMenuMaybe}
       {signupLinkMaybe}
