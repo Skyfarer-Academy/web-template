@@ -245,8 +245,8 @@ const TopbarDesktop = props => {
         linkToExternalSite={config?.topbar?.logoLink}
       />
       {searchFormMaybe}
-
       {addListingLinkMaybe}
+
       <CustomLinksMenu
         currentPage={currentPage}
         currentUser={currentUser}
@@ -255,7 +255,6 @@ const TopbarDesktop = props => {
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
         />
-
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
       {inboxLinkMaybe}
