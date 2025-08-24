@@ -303,6 +303,7 @@ const OrderPanel = props => {
     onToggleFavorites,
     payoutDetailsWarning,
     reschedule, // [SKYFARER]
+    showListingImage,
   } = props;
 
   const config = useConfiguration(); // [SKYFARER]
@@ -435,7 +436,7 @@ const OrderPanel = props => {
       } catch {}
     }
   }, [currentUser])
-  
+
   return (
     <div className={classes}>
       <ModalInMobile
@@ -451,10 +452,12 @@ const OrderPanel = props => {
           <H1 className={css.heading}>{title}</H1>
         </div>
 
-        <div className={css.orderHeading}>
-          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
-          {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
-        </div>
+        {showListingImage && (
+          <div className={css.orderHeading}>
+            {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+            {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
+          </div>
+        )}
 
         <PriceMaybe
           price={price}
