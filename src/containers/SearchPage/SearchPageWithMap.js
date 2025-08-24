@@ -1,3 +1,5 @@
+// console.log("This is the page for layout changes");
+
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';

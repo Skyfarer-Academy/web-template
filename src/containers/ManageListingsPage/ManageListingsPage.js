@@ -211,7 +211,8 @@ export const ManageListingsPageComponent = props => {
           <>
             <TopbarContainer />
             <UserNav
-              currentPage="ManageListingsPage"
+              currentUser={currentUser} 
+              currentPage ="ManageListingsPage"
               showManageListingsLink={showManageListingsLink}
             />
           </>

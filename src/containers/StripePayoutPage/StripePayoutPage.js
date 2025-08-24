@@ -193,6 +193,7 @@ export const StripePayoutPageComponent = props => {
               mobileClassName={css.mobileTopbar}
             />
             <UserNav
+              currentUser={currentUser} 
               currentPage="StripePayoutPage"
               showManageListingsLink={showManageListingsLink}
             />
