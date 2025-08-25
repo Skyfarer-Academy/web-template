@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import { FormattedMessage, intlShape } from '../../../../util/reactIntl';
 import { isInstructor } from '../../../../util/skyfarer';
+import { hasPermissionToPostListings } from '../../../../util/userHelpers';
 
 import {
   ACCOUNT_SETTINGS_PAGES
@@ -62,6 +63,20 @@ const LoginLink = () => {
   );
 };
 
+const AddListingButton = ({ currentUser }) => {
+  if (!currentUser || !hasPermissionToPostListings(currentUser)) 
+    {
+    return null;
+  }
+  return (
+      <NamedLink name="NewListingPage" className={css.topbarLink} >
+      <span className={css.topbarLinkLabel}>
+        <FormattedMessage id="TopbarDesktop.createListing" defaultMessage="Add a new Listing" />
+      </span>
+    </NamedLink>
+  );
+};
+
 const InboxLink = ({ notificationCount, inboxTab }) => {
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
   return (
@@ -87,7 +102,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {showManageListingsLink ? (
+        {showManageListingsLink && isInstructor(currentUser) ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -184,6 +199,10 @@ const TopbarDesktop = props => {
   //   <InstructorMatchingButtonLink/>
   // ) : null;
   const instructorMatchingButtonLinkMaybe = null;
+  
+  const addListingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
+  <AddListingButton currentUser={currentUser} />
+  ) : null;
 
   const inboxLinkMaybe = authenticatedOnClientSide ? (
     <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
@@ -226,6 +245,7 @@ const TopbarDesktop = props => {
         linkToExternalSite={config?.topbar?.logoLink}
       />
       {searchFormMaybe}
+      {addListingLinkMaybe}
 
       <CustomLinksMenu
         currentPage={currentPage}
@@ -234,8 +254,7 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-      />
-
+        />
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
       {inboxLinkMaybe}
