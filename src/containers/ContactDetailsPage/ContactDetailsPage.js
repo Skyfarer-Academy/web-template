@@ -123,6 +123,7 @@ export const ContactDetailsPageComponent = props => {
               mobileClassName={css.mobileTopbar}
             />
             <UserNav
+              currentUser={currentUser} 
               currentPage="ContactDetailsPage"
               showManageListingsLink={showManageListingsLink}
             />

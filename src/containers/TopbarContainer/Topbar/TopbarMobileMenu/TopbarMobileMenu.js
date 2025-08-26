@@ -98,11 +98,13 @@ const TopbarMobileMenu = props => {
     );
   });
 
-  const createListingsLinkMaybe = showCreateListingsLink ? (
+  const createListingsLinkMaybe =
+  currentUser && isInstructor(currentUser) ? (
     <NamedLink className={css.createNewListingLink} name="NewListingPage">
       <FormattedMessage id="TopbarMobileMenu.newListingLink" />
     </NamedLink>
   ) : null;
+
 
   if (!isAuthenticated) {
     const signup = (

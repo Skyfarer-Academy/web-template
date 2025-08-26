@@ -180,6 +180,7 @@ const PaymentMethodsPageComponent = props => {
               mobileClassName={css.mobileTopbar}
             />
             <UserNav
+              currentUser={currentUser}
               currentPage="PaymentMethodsPage"
               showManageListingsLink={showManageListingsLink}
             />
