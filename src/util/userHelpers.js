@@ -1,5 +1,6 @@
 import { EXTENDED_DATA_SCHEMA_TYPES } from './types';
 import { getFieldValue } from './fieldHelpers';
+import { isInstructor } from './skyfarer';
 
 /**
  * Get the namespaced attribute key based on the specified extended data scope and attribute key
@@ -241,9 +242,8 @@ export const showCreateListingLinkForUser = (config, currentUser) => {
 
   const canPostListings = hasPermissionToPostListings(currentUser);
 
-  return accountLinksVisibility
-    ? accountLinksVisibility.postListings && canPostListings
-    : canPostListings;
+  return (accountLinksVisibility?.postListings ?? false) || canPostListings || isInstructor(currentUser);
+
 
   // return currentUser && accountLinksVisibility
   //   ? accountLinksVisibility.postListings

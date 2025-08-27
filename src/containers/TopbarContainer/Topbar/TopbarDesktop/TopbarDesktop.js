@@ -203,6 +203,12 @@ const TopbarDesktop = props => {
   const addListingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
   <AddListingButton currentUser={currentUser} />
   ) : null;
+  
+  // console.log(currentUser?.attributes?.profile?.publicData?.userType);
+  // console.log('School user:', currentUser?.attributes?.email);
+  // console.log('authenticatedOnClientSide:', authenticatedOnClientSide);
+  // console.log('isInstructor:', currentUser ? isInstructor(currentUser) : false);
+  // console.log('hasPermissionToPostListings:', currentUser ? hasPermissionToPostListings(currentUser) : false);
 
   const inboxLinkMaybe = authenticatedOnClientSide ? (
     <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
@@ -264,5 +270,7 @@ const TopbarDesktop = props => {
     </nav>
   );
 };
+
+
 
 export default TopbarDesktop;

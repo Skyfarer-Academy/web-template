@@ -1,3 +1,4 @@
+console.log("Password reset page");
 import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
