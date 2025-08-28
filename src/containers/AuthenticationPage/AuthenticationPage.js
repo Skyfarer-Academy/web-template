@@ -200,31 +200,46 @@ export const AuthenticationForms = props => {
     },
   ];
 
-  const handleSubmitSignup = values => {
-    const { userType, email, password, fname, lname, displayName, ...rest } = values;
-    const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
+  const handleSubmitSignup = async values => {
+  const { userType, email, password, fname, lname, displayName, ...rest } = values;
+  const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
-    const params = {
-      email,
-      password,
-      firstName: fname.trim(),
-      lastName: lname.trim(),
-      ...displayNameMaybe,
-      publicData: {
-        userType,
-        ...pickUserFieldsData(rest, 'public', userType, userFields),
-      },
-      privateData: {
-        ...pickUserFieldsData(rest, 'private', userType, userFields),
-      },
-      protectedData: {
-        ...pickUserFieldsData(rest, 'protected', userType, userFields),
-        ...getNonUserFieldParams(rest, userFields),
-      },
-    };
+  // System-generated data
+  const signupTimestamp = new Date().toISOString();
 
-    submitSignup(params);
+  // For IP, you need to get it from an API call (frontend cannot reliably get user's public IP)
+  let signupIP = 'unknown';
+  try {
+    const res = await fetch('https://api.ipify.org?format=json'); // free IP API
+    const data = await res.json();
+    signupIP = data.ip;
+  } catch (err) {
+    console.error('Could not fetch IP address', err);
+  }
+
+  const params = {
+    email,
+    password,
+    firstName: fname.trim(),
+    lastName: lname.trim(),
+    ...displayNameMaybe,
+    publicData: {
+      userType,
+      signupTimestamp, // visible publicly
+      ...pickUserFieldsData(rest, 'public', userType, userFields),
+    },
+    protectedData: {
+      signupIP, // internal use only
+      ...pickUserFieldsData(rest, 'protected', userType, userFields),
+      ...getNonUserFieldParams(rest, userFields),
+    },
+    privateData: {
+      ...pickUserFieldsData(rest, 'private', userType, userFields),
+    },
   };
+
+  submitSignup(params);
+};
 
   const loginErrorMessage = (
     <div className={css.error}>
