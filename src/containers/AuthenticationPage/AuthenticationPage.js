@@ -200,7 +200,7 @@ export const AuthenticationForms = props => {
     },
   ];
 
-  const handleSubmitSignup = async values => {
+const handleSubmitSignup = async values => {
   const { userType, email, password, fname, lname, displayName, ...rest } = values;
   const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
@@ -225,11 +225,11 @@ export const AuthenticationForms = props => {
     ...displayNameMaybe,
     publicData: {
       userType,
-      signupTimestamp, // visible publicly
       ...pickUserFieldsData(rest, 'public', userType, userFields),
     },
     protectedData: {
       signupIP, // internal use only
+      signupTimestamp, // visible publicly
       ...pickUserFieldsData(rest, 'protected', userType, userFields),
       ...getNonUserFieldParams(rest, userFields),
     },
