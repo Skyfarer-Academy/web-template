@@ -42,15 +42,24 @@ export const resetPasswordError = e => ({
 
 // ================ Thunks ================ //
 
-export const resetPassword = (email, passwordResetToken, newPassword) => (
+export const resetPassword = (email, passwordResetToken, newPassword, protectedDataUpdate) => (
   dispatch,
   getState,
   sdk
 ) => {
   dispatch(resetPasswordRequest());
-  const params = { email, passwordResetToken, newPassword };
+
+  // Merge newPassword + protectedData into params
+  const params = {
+    email,
+    passwordResetToken,
+    newPassword,
+    protectedData: protectedDataUpdate, // <-- include metadata here
+  };
+
   return sdk.passwordReset
     .reset(params)
     .then(() => dispatch(resetPasswordSuccess()))
     .catch(e => dispatch(resetPasswordError(storableError(e))));
 };
+
