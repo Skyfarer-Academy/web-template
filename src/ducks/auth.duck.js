@@ -180,9 +180,30 @@ export const login = (username, password) => (dispatch, getState, sdk) => {
   return sdk
     .login({ username, password })
     .then(() => dispatch(fetchCurrentUser({ afterLogin: true })))
-    .then(() => dispatch(loginSuccess()))
+    .then(() => {
+      // Update protectedData if password reset metadata exists
+      dispatch(loginSuccess());
+      // ✅ Update protected data if password was recently reset
+      const metadataStr = localStorage.getItem('passwordResetMetadata');
+      if (metadataStr) {
+        const protectedDataUpdate = JSON.parse(metadataStr);
+        localStorage.removeItem('passwordResetMetadata'); // clean up after updating
+        return sdk.currentUser
+          .updateProfile({ protectedData: protectedDataUpdate })
+          .then(res =>
+            console.log(
+              '✅ Protected data updated after login:',
+              res.data.data.attributes.protectedData
+            )
+          )
+          .catch(err =>
+            console.warn('Could not update protected data after login:', err)
+          );
+      }
+    })
     .catch(e => dispatch(loginError(storableError(e))));
 };
+
 
 export const logout = () => (dispatch, getState, sdk) => {
   if (authenticationInProgress(getState())) {

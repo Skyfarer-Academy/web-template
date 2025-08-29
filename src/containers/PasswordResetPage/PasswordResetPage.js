@@ -150,7 +150,7 @@ export const PasswordResetPageComponent = props => {
     console.log('Password reset metadata (local test):', protectedDataUpdate);
 
     // Call SDK to reset password (metadata will be updated after login)
-    onSubmitPassword(email, token, password)
+    onSubmitPassword(email, token, password, protectedDataUpdate)
       .then(() => setState({ newPasswordSubmitted: true }));
   };
 
@@ -206,7 +206,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onSubmitPassword: (email, token, password) => dispatch(resetPassword(email, token, password)),
+  onSubmitPassword: (email, token, password, protectedDataUpdate) => dispatch(resetPassword(email, token, password, protectedDataUpdate)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

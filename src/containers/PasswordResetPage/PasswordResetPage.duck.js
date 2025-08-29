@@ -40,6 +40,9 @@ export const resetPasswordError = e => ({
 
 // ================ Thunk ================ //
 
+// NOTE: We DO NOT call update_profile here anymore (that caused 403 when user was not authenticated).
+// Instead, we stash the metadata to localStorage so auth.duck.js can update protectedData
+// immediately after a successful login.
 export const resetPassword = (email, passwordResetToken, newPassword, protectedDataUpdate) => (
   dispatch,
   getState,
@@ -47,20 +50,23 @@ export const resetPassword = (email, passwordResetToken, newPassword, protectedD
 ) => {
   dispatch(resetPasswordRequest());
 
-  const params = {
-    email,
-    passwordResetToken,
-    newPassword,
-    protectedData: protectedDataUpdate, // send metadata here
-  };
+  const params = { email, passwordResetToken, newPassword };
 
   return sdk.passwordReset
-    .reset(params)
-    .then(res => {
-      console.log('✅ Password reset completed for user:', email);
-      console.log('Metadata sent:', protectedDataUpdate);
-      dispatch(resetPasswordSuccess());
+    .reset(params) // Only reset password here
+    .then(() => {
+      console.log('✅ Password reset successful');
+
+      // Stash metadata for after-login update (handled in auth.duck.js)
+      if (protectedDataUpdate) {
+        try {
+          localStorage.setItem('passwordResetMetadata', JSON.stringify(protectedDataUpdate));
+          console.log('💾 Stashed reset metadata for after-login update:', protectedDataUpdate);
+        } catch (err) {
+          console.warn('Could not save reset metadata to localStorage:', err);
+        }
+      }
     })
+    .then(() => dispatch(resetPasswordSuccess()))
     .catch(e => dispatch(resetPasswordError(storableError(e))));
 };
-
