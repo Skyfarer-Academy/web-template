@@ -175,34 +175,42 @@ export const login = (username, password) => (dispatch, getState, sdk) => {
   }
   dispatch(loginRequest());
 
-  // Note that the thunk does not reject when the login fails, it
-  // just dispatches the login error action.
   return sdk
     .login({ username, password })
-    .then(() => dispatch(fetchCurrentUser({ afterLogin: true })))
+    .then(() => dispatch(fetchCurrentUser({ afterLogin: true, callParams: { include: ['protectedData'] } })))
     .then(() => {
-      // Update protectedData if password reset metadata exists
       dispatch(loginSuccess());
-      // ✅ Update protected data if password was recently reset
+
       const metadataStr = localStorage.getItem('passwordResetMetadata');
       if (metadataStr) {
-        const protectedDataUpdate = JSON.parse(metadataStr);
-        localStorage.removeItem('passwordResetMetadata'); // clean up after updating
+        const newResetEntry = JSON.parse(metadataStr);
+        localStorage.removeItem('passwordResetMetadata');
+
+        // Get the updated user from Redux
+        const state = getState();
+        const currentUser = state.user.currentUser;
+
+        const existingResets =
+          currentUser?.attributes?.protectedData?.passwordResets || [];
+
+        const updatedResets = [...existingResets, newResetEntry];
+
         return sdk.currentUser
-          .updateProfile({ protectedData: protectedDataUpdate })
+          .updateProfile({ protectedData: { passwordResets: updatedResets } })
           .then(res =>
             console.log(
-              '✅ Protected data updated after login:',
-              res.data.data.attributes.protectedData
+              '✅ Protected data updated with full password reset history:',
+              res.data.data.attributes.protectedData.passwordResets
             )
           )
           .catch(err =>
-            console.warn('Could not update protected data after login:', err)
+            console.warn('⚠️ Could not update protected data after login:', err)
           );
       }
     })
     .catch(e => dispatch(loginError(storableError(e))));
 };
+
 
 
 export const logout = () => (dispatch, getState, sdk) => {

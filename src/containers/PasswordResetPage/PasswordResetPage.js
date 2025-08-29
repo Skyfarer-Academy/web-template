@@ -128,31 +128,32 @@ export const PasswordResetPageComponent = props => {
   const isPasswordSubmitted = state.newPasswordSubmitted && !resetPasswordError;
 
   const handleSubmit = async values => {
-    const { password } = values;
-    setState({ newPasswordSubmitted: false });
+  const { password } = values;
+  setState({ newPasswordSubmitted: false });
 
-    // Collect metadata
-    const passwordResetTimestamp = new Date().toISOString();
-    let passwordResetIP = 'unknown';
-    try {
-      const res = await fetch('https://api.ipify.org?format=json');
-      const data = await res.json();
-      passwordResetIP = data.ip;
-    } catch (err) {
-      console.error('Could not fetch IP address', err);
-    }
+  // Collect metadata
+  const passwordResetTimestamp = new Date().toISOString();
+  let passwordResetIP = 'unknown';
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    passwordResetIP = data.ip;
+  } catch (err) {
+    console.error('Could not fetch IP address', err);
+  }
 
-    const protectedDataUpdate = {
-      passwordResetTimestamp,
-      passwordResetIP,
-    };
+  // Create a new reset entry
+  const newResetEntry = { timestamp: passwordResetTimestamp, ip: passwordResetIP };
+  console.log('Password reset metadata (local test):', newResetEntry);
 
-    console.log('Password reset metadata (local test):', protectedDataUpdate);
+  // Save temporarily to localStorage for after-login update
+  localStorage.setItem('passwordResetMetadata', JSON.stringify(newResetEntry));
 
-    // Call SDK to reset password (metadata will be updated after login)
-    onSubmitPassword(email, token, password, protectedDataUpdate)
-      .then(() => setState({ newPasswordSubmitted: true }));
-  };
+  // Call SDK to reset password (metadata will be appended after login)
+  onSubmitPassword(email, token, password)
+    .then(() => setState({ newPasswordSubmitted: true }));
+};
+
 
 
   return (
@@ -206,7 +207,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onSubmitPassword: (email, token, password, protectedDataUpdate) => dispatch(resetPassword(email, token, password, protectedDataUpdate)),
+  onSubmitPassword: (email, token, password) => dispatch(resetPassword(email, token, password)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
