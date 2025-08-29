@@ -117,7 +117,7 @@ class PasswordRecoveryForm extends Component {
               <div className={css.bottomWrapper}>
                 <p className={css.bottomWrapperText}>
                   <span className={css.modalHelperText}>
-                    {termsAndConditions}  
+                    {/* {termsAndConditions}   */}
                     <FormattedMessage
                       id="PasswordRecoveryForm.loginLinkInfo"
                       values={{ loginLink }}

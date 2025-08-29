@@ -51,9 +51,6 @@ const PasswordRecovery = props => {
       <p className={css.modalMessage}>
         <FormattedMessage id="PasswordRecoveryPage.forgotPasswordMessage" />
       </p>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="PasswordRecoveryPage.forgotPasswordNote" />
-      </p>
       <PasswordRecoveryForm
         inProgress={recoveryInProgress}
         onChange={onChange}
