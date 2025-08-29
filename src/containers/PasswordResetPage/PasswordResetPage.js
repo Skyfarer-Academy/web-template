@@ -129,31 +129,29 @@ export const PasswordResetPageComponent = props => {
 
   const handleSubmit = async values => {
     const { password } = values;
-
     setState({ newPasswordSubmitted: false });
 
     // Collect metadata
     const passwordResetTimestamp = new Date().toISOString();
     let passwordResetIP = 'unknown';
-      try {
-        const res = await fetch('https://api.ipify.org?format=json'); // free IP API
-        const data = await res.json();
-        passwordResetIP = data.ip;
-      } catch (err) {
-        console.error('Could not fetch IP address', err);
-      }
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      passwordResetIP = data.ip;
+    } catch (err) {
+      console.error('Could not fetch IP address', err);
+    }
 
-    // Include metadata in protectedData
     const protectedDataUpdate = {
       passwordResetTimestamp,
       passwordResetIP,
     };
 
-    // Call SDK to update user protectedData before submitting new password
-    onSubmitPassword(email, token, password, protectedDataUpdate)
-      .then(() => {
-        setState({ newPasswordSubmitted: true });
-      });
+    console.log('Password reset metadata (local test):', protectedDataUpdate);
+
+    // Call SDK to reset password (metadata will be updated after login)
+    onSubmitPassword(email, token, password)
+      .then(() => setState({ newPasswordSubmitted: true }));
   };
 
 
@@ -208,7 +206,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onSubmitPassword: (email, token, password, protectedDataUpdate) => dispatch(resetPassword(email, token, password, protectedDataUpdate)),
+  onSubmitPassword: (email, token, password) => dispatch(resetPassword(email, token, password)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

@@ -21,7 +21,7 @@ export default function reducer(state = initialState, action = {}) {
     case RESET_PASSWORD_SUCCESS:
       return { ...state, resetPasswordInProgress: false };
     case RESET_PASSWORD_ERROR:
-      console.error(payload); // eslint-disable-line no-console
+      console.error(payload);
       return { ...state, resetPasswordInProgress: false, resetPasswordError: payload };
     default:
       return state;
@@ -31,16 +31,14 @@ export default function reducer(state = initialState, action = {}) {
 // ================ Action creators ================ //
 
 export const resetPasswordRequest = () => ({ type: RESET_PASSWORD_REQUEST });
-
 export const resetPasswordSuccess = () => ({ type: RESET_PASSWORD_SUCCESS });
-
 export const resetPasswordError = e => ({
   type: RESET_PASSWORD_ERROR,
   error: true,
   payload: e,
 });
 
-// ================ Thunks ================ //
+// ================ Thunk ================ //
 
 export const resetPassword = (email, passwordResetToken, newPassword, protectedDataUpdate) => (
   dispatch,
@@ -49,17 +47,20 @@ export const resetPassword = (email, passwordResetToken, newPassword, protectedD
 ) => {
   dispatch(resetPasswordRequest());
 
-  // Merge newPassword + protectedData into params
   const params = {
     email,
     passwordResetToken,
     newPassword,
-    protectedData: protectedDataUpdate, // <-- include metadata here
+    protectedData: protectedDataUpdate, // send metadata here
   };
 
   return sdk.passwordReset
     .reset(params)
-    .then(() => dispatch(resetPasswordSuccess()))
+    .then(res => {
+      console.log('✅ Password reset completed for user:', email);
+      console.log('Metadata sent:', protectedDataUpdate);
+      dispatch(resetPasswordSuccess());
+    })
     .catch(e => dispatch(resetPasswordError(storableError(e))));
 };
 
