@@ -2,7 +2,7 @@ import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-
+import TermsAndConditions from '../AuthenticationPage/TermsAndConditions/TermsAndConditions';
 import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
@@ -31,7 +31,17 @@ import {
 import css from './PasswordRecoveryPage.module.css';
 
 const PasswordRecovery = props => {
-  const { initialEmail, onChange, onSubmitEmail, recoveryInProgress, recoveryError } = props;
+  const {
+    initialEmail,
+    onChange,
+    onSubmitEmail,
+    recoveryInProgress,
+    recoveryError,
+    onOpenTermsOfService,
+    onOpenPrivacyPolicy,
+    intl
+  } = props;
+
   return (
     <div className={css.submitEmailContent}>
       <IconKeys className={css.modalIcon} />
@@ -47,10 +57,19 @@ const PasswordRecovery = props => {
         onSubmit={values => onSubmitEmail(values.email)}
         initialValues={{ email: initialEmail }}
         recoveryError={recoveryError}
+        termsAndConditions={
+          <TermsAndConditions
+            formId="PasswordRecoveryForm"
+            onOpenTermsOfService={onOpenTermsOfService}
+            onOpenPrivacyPolicy={onOpenPrivacyPolicy}
+            intl={intl}
+          />
+        }
       />
     </div>
   );
 };
+
 
 const GenericError = () => {
   return (
@@ -165,6 +184,9 @@ export const PasswordRecoveryPageComponent = props => {
       onSubmitEmail={onSubmitEmail}
       recoveryInProgress={recoveryInProgress}
       recoveryError={recoveryError}
+      onOpenTermsOfService={props.onOpenTermsOfService}
+      onOpenPrivacyPolicy={props.onOpenPrivacyPolicy}
+      intl={intl}
     />
   );
 

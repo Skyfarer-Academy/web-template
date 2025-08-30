@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import TermsAndConditions from '../../AuthenticationPage/TermsAndConditions/TermsAndConditions';
 import { Form as FinalForm } from 'react-final-form';
+import arrayMutators from 'final-form-arrays';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 
@@ -34,17 +36,20 @@ class PasswordRecoveryForm extends Component {
     return (
       <FinalForm
         {...this.props}
+        mutators={{ ...arrayMutators }}
         render={fieldRenderProps => {
           const {
             rootClassName,
             className,
             formId,
             handleSubmit,
-            pristine,
+            // pristine,
+            termsAndConditions,
             initialValues,
             inProgress = false,
             recoveryError,
             values,
+            invalid,
           } = fieldRenderProps;
 
           const intl = useIntl();
@@ -80,9 +85,8 @@ class PasswordRecoveryForm extends Component {
           const classes = classNames(rootClassName || css.root, className);
           const submitInProgress = inProgress;
           const submittedOnce = Object.keys(this.submittedValues).length > 0;
-          const pristineSinceLastSubmit = submittedOnce && isEqual(values, this.submittedValues);
-          const submitDisabled =
-            (pristine && !initialEmail) || submitInProgress || pristineSinceLastSubmit;
+          // const pristineSinceLastSubmit = submittedOnce && isEqual(values, this.submittedValues);
+          const submitDisabled = invalid || submitInProgress;
 
           const loginLink = (
             <NamedLink name="LoginPage" className={css.modalHelperLink}>
@@ -113,20 +117,17 @@ class PasswordRecoveryForm extends Component {
               <div className={css.bottomWrapper}>
                 <p className={css.bottomWrapperText}>
                   <span className={css.modalHelperText}>
+                    {/* {termsAndConditions}   */}
                     <FormattedMessage
                       id="PasswordRecoveryForm.loginLinkInfo"
                       values={{ loginLink }}
                     />
                   </span>
                 </p>
-
-                <PrimaryButton
-                  type="submit"
-                  inProgress={submitInProgress}
-                  disabled={submitDisabled}
-                >
+                {/* {termsAndConditions} */}
+                <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
                   <FormattedMessage id="PasswordRecoveryForm.sendInstructions" />
-                </PrimaryButton>
+                </PrimaryButton>      
               </div>
             </Form>
           );

@@ -205,7 +205,7 @@ const TopbarComponent = props => {
     });
   };
 
-  console.log("current user-->", currentUser);
+  //console.log("current user-->", currentUser);
 
   const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
   const { customer: isCustomer, provider: isProvider } = getCurrentUserTypeRoles(

@@ -1,8 +1,9 @@
+console.log("Password reset page");
 import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-
+import TermsAndConditions from '../AuthenticationPage/TermsAndConditions/TermsAndConditions';
 import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
@@ -49,16 +50,27 @@ const ParamsMissingContent = () => {
 };
 
 const ResetFormContent = props => {
-  const { handleSubmit, resetPasswordInProgress, resetPasswordError } = props;
+  const { handleSubmit, resetPasswordInProgress, resetPasswordError, onOpenTermsOfService, onOpenPrivacyPolicy, intl } = props;
   return (
     <div className={css.content}>
       <IconKeys className={css.modalIcon} />
       <Heading as="h1" rootClassName={css.modalTitle}>
         <FormattedMessage id="PasswordResetPage.mainHeading" />
       </Heading>
-      <p className={css.modalMessage}>
+      {/* <p className={css.modalMessage}>
         <FormattedMessage id="PasswordResetPage.helpText" />
+      </p> */}
+      <p className={css.modalMessage}>
+        <FormattedMessage id="PasswordResetPage.helpText1" />
       </p>
+      <ul className={css.modalMessageList}>
+        <li className={css.modalMessage}>
+          <FormattedMessage id="PasswordResetPage.helpText2" />
+        </li>
+        <li className={css.modalMessage}>
+          <FormattedMessage id="PasswordResetPage.helpText3" />
+        </li>
+      </ul>
       {resetPasswordError ? (
         <p className={css.error}>
           <FormattedMessage id="PasswordResetPage.resetFailed" />
@@ -68,6 +80,14 @@ const ResetFormContent = props => {
         className={css.form}
         onSubmit={handleSubmit}
         inProgress={resetPasswordInProgress}
+        termsAndConditions={
+          <TermsAndConditions
+            formId="PasswordResetForm"
+            onOpenTermsOfService={onOpenTermsOfService}
+            onOpenPrivacyPolicy={onOpenPrivacyPolicy}
+            intl={intl}
+          />
+        }
       />
     </div>
   );
@@ -118,13 +138,33 @@ export const PasswordResetPageComponent = props => {
   const hasParams = !!(token && email);
   const isPasswordSubmitted = state.newPasswordSubmitted && !resetPasswordError;
 
-  const handleSubmit = values => {
+  const handleSubmit = async values => {
     const { password } = values;
     setState({ newPasswordSubmitted: false });
-    onSubmitPassword(email, token, password).then(() => {
-      setState({ newPasswordSubmitted: true });
-    });
+
+    // Collect metadata
+    const passwordResetTimestamp = new Date().toISOString();
+    let passwordResetIP = 'unknown';
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      passwordResetIP = data.ip;
+    } catch (err) {
+      console.error('Could not fetch IP address', err);
+    }
+
+    const protectedDataUpdate = {
+      passwordResetTimestamp,
+      passwordResetIP,
+    };
+
+    console.log('Password reset metadata (local test):', protectedDataUpdate);
+
+    // Call SDK to reset password (metadata will be updated after login)
+    onSubmitPassword(email, token, password, protectedDataUpdate)
+      .then(() => setState({ newPasswordSubmitted: true }));
   };
+
 
   return (
     <Page
@@ -156,6 +196,9 @@ export const PasswordResetPageComponent = props => {
               handleSubmit={handleSubmit}
               resetPasswordInProgress={resetPasswordInProgress}
               resetPasswordError={resetPasswordError}
+              onOpenTermsOfService={props.onOpenTermsOfService}
+              onOpenPrivacyPolicy={props.onOpenPrivacyPolicy}
+              intl={intl}
             />
           )}
         </ResponsiveBackgroundImageContainer>
@@ -174,7 +217,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onSubmitPassword: (email, token, password) => dispatch(resetPassword(email, token, password)),
+  onSubmitPassword: (email, token, password, protectedDataUpdate) => dispatch(resetPassword(email, token, password, protectedDataUpdate)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
