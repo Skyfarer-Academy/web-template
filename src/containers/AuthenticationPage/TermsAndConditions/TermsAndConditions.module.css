@@ -18,11 +18,12 @@
 .privacyLink,
 .termsLink {
   composes: marketplaceModalHelperLink from global;
-  color: var(--marketplaceColor);
+  color: var(--marketplaceColorLight);
+  text-decoration: underline;
+  cursor: pointer;
 
   &:hover {
     color: var(--marketplaceColorDark);
-    text-decoration: underline;
-    cursor: pointer;
+    /* text-decoration: underline; */
   }
 }

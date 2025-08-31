@@ -7,7 +7,7 @@ import { FormattedMessage, intlShape } from '../../../util/reactIntl';
 
 import css from './TermsAndConditions.module.css';
 
-const KEY_CODE_ENTER = 13;
+const KEY_CODE_ENTER = 13; 
 
 /**
  * A component that renders the terms and conditions.

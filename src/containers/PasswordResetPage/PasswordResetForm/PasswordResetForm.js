@@ -1,7 +1,8 @@
 import React from 'react';
+import TermsAndConditions from '../../AuthenticationPage/TermsAndConditions/TermsAndConditions';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
-
+import arrayMutators from 'final-form-arrays';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import * as validators from '../../../util/validators';
 
@@ -22,6 +23,7 @@ import css from './PasswordResetForm.module.css';
 const PasswordResetForm = props => (
   <FinalForm
     {...props}
+    mutators={{ ...arrayMutators }}
     render={fieldRenderProps => {
       const {
         rootClassName,
@@ -30,6 +32,7 @@ const PasswordResetForm = props => (
         handleSubmit,
         inProgress = false,
         invalid,
+        termsAndConditions,
       } = fieldRenderProps;
 
       const intl = useIntl();
@@ -90,6 +93,7 @@ const PasswordResetForm = props => (
               passwordMaxLength
             )}
           />
+          {termsAndConditions}
           <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
             <FormattedMessage id="PasswordResetForm.submitButtonText" />
           </PrimaryButton>
