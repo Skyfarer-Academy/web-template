@@ -130,6 +130,19 @@ const ResetDoneContent = () => {
   );
 };
 
+/**
+ * The reset-password page.
+ *
+ * @param {Object} props
+ * @param {boolean} props.scrollingDisabled - Whether the page is scrolling disabled
+ * @param {boolean} props.resetPasswordInProgress - Whether the reset password is in progress
+ * @param {propTypes.error} props.resetPasswordError - The reset password error
+ * @param {function} props.onSubmitPassword - The function to submit the password
+ * @param {Object} props.location - The location object
+ * @param {string} props.location.search - The search string
+ * @returns {JSX.Element} Password reset page component
+ */
+
 export const PasswordResetPageComponent = props => {
   const [state, setState] = useState({ newPasswordSubmitted: false });
   const [tosModalOpen, setTosModalOpen] = useState(false);
@@ -306,6 +319,13 @@ const mapDispatchToProps = dispatch => ({
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   dispatchLoadPageAssets: () => dispatch(loadPageAssets()),
 });
+
+// Note: it is important that the withRouter HOC is **outside** the
+// connect HOC, otherwise React Router won't rerender any Route
+// components since connect implements a shouldComponentUpdate
+// lifecycle hook.
+//
+// See: https://github.com/ReactTraining/react-router/issues/4671
 
 const PasswordResetPage = compose(
   withRouter,
