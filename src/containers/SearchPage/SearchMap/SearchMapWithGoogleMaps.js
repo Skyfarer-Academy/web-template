@@ -3,6 +3,7 @@ console.log("SearchMapWithGoogleMaps is being used");
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import invariant from 'invariant';
+
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 
