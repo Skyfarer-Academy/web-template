@@ -24,6 +24,8 @@ import Logo from '../../../assets/logo-icon.png';
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 import FieldDateAndTimeInput from './FieldDateAndTimeInput';
 
+import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
+
 import css from './BookingTimeForm.module.css';
 import ConsultationBox from '../../ConsultationBox/ConsultationBox'; // [SKYFARER]
 
@@ -340,12 +342,7 @@ export const BookingTimeForm = props => {
                 />
               </div>
             ) : null}
-
-            {fetchLineItemsError ? (
-              <span className={css.sideBarError}>
-                <FormattedMessage id="BookingTimeForm.fetchLineItemsError" />
-              </span>
-            ) : null}
+            <FetchLineItemsError error={fetchLineItemsError} />
 
             <div className={css.submitButton}>
               <PrimaryButton
