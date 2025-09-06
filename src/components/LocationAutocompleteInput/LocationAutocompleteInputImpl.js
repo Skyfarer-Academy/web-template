@@ -306,7 +306,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.getGeocoder()
       .getPlaceDetails(prediction, currentLocationBoundsDistance)
       .then(place => {
-        console.log("DEBUG selected place details:", place, "raw prediction:", prediction);  
+        // console.log("DEBUG selected place details:", place, "raw prediction:", prediction);  
         if (!this._isMounted) {
           // Ignore if component already unmounted
           return;
