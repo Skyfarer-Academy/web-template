@@ -30,23 +30,23 @@ const placeOrigin = place => {
  *                                 with 100km radius around the place's location.
  *                                 Returns null if the place or its location is invalid.
  */
-const placeBounds = (place, currentLocationBoundsDistance) => {
-  // if (place && place.viewport) {
-  //   const ne = place.viewport.getNorthEast();
-  //   const sw = place.viewport.getSouthWest();
-  //   return new SDKLatLngBounds(
-  //     new SDKLatLng(ne.lat(), ne.lng()),
-  //     new SDKLatLng(sw.lat(), sw.lng())
-  //   );
-  // }
-  // return null;
-  // [SKYFARER]
-  if (!place || !place.location) {
-    return null;
+const placeBounds = (place) => {
+  if (place && place.viewport) {
+    const ne = place.viewport.getNorthEast();
+    const sw = place.viewport.getSouthWest();
+    return new SDKLatLngBounds(
+      new SDKLatLng(ne.lat(), ne.lng()),
+      new SDKLatLng(sw.lat(), sw.lng())
+    );
   }
+  return null;
+  // [SKYFARER]
+  /*if (!place || !place.location) {
+     return null;
+   }
   
-  const distance_meteres = currentLocationBoundsDistance;
-  return locationBounds({ lat: place.location.lat(), lng: place.location.lng() }, distance_meteres);
+   const distance_meteres = currentLocationBoundsDistance;
+   return locationBounds({ lat: place.location.lat(), lng: place.location.lng() }, distance_meteres);*/
 };
 
 /**
@@ -59,7 +59,7 @@ const placeBounds = (place, currentLocationBoundsDistance) => {
  *   - `origin` (object): The geographic origin of the place (calculated using `placeOrigin`).
  *   - `bounds` (object): The viewport bounds of the place (calculated using `placeBounds`).
  */
-export const getPlaceDetails = async (placeId, currentLocationBoundsDistance) => {
+export const getPlaceDetails = async (placeId) => {
   try {
     const place = await new window.google.maps.places.Place({ id: placeId });
     const fields = ['addressComponents', 'formattedAddress', 'viewport', 'id', 'location'];
@@ -69,7 +69,7 @@ export const getPlaceDetails = async (placeId, currentLocationBoundsDistance) =>
     return {
       address: place.formattedAddress,
       origin: placeOrigin(place),
-      bounds: placeBounds(place, currentLocationBoundsDistance),
+      bounds: placeBounds(place),
     };
   } catch (error) {
     if (isDev) {

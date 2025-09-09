@@ -16,7 +16,7 @@ import {
   isAnyFilterActive,
   isMainSearchTypeKeywords,
   isOriginInUse,
-  getQueryParamNames,
+  getQueryParamNames, 
 } from '../../util/search';
 import {
   NO_ACCESS_PAGE_USER_PENDING_APPROVAL,
