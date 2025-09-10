@@ -1,6 +1,7 @@
 /* global google */
 
-import { types as sdkTypes } from '../util/sdkLoader';
+import { types as sdkTypes, types } from '../util/sdkLoader';
+
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -62,16 +63,44 @@ const placeBounds = (place) => {
 export const getPlaceDetails = async (placeId) => {
   try {
     const place = await new window.google.maps.places.Place({ id: placeId });
-    const fields = ['addressComponents', 'formattedAddress', 'viewport', 'id', 'location'];
+    const fields = ['addressComponents', 'formattedAddress', 'viewport', 'id', 'location', 'types'];
 
     await place.fetchFields({ fields: fields });
 
+    const origin = placeOrigin(place);
+    let bounds;
+
+    if (place.types && origin && (place.types.includes('locality') && place.types.includes('political'))) 
+    {
+      // Locality or political entity – 50 km radius
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, 25000);
+    }
+    else if(place.types.includes('airport') || place.types.includes('street_address'))
+    {
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, 10000)
+    } 
+    else 
+    {
+      // Fallback – use Google's viewport bounds
+      bounds = placeBounds(place);
+    }
+
+    console.log('Fetched place details:', {
+      address: place.formattedAddress,
+      origin,
+      bounds,
+      types: place.types,
+    });
+    
     return {
       address: place.formattedAddress,
-      origin: placeOrigin(place),
-      bounds: placeBounds(place),
+      origin,
+      bounds,
+      types: place.types,
     };
-  } catch (error) {
+  } 
+  catch (error) 
+    {
     if (isDev) {
       console.error(`Could not get details for place id "${placeId}": `, error);
     }
