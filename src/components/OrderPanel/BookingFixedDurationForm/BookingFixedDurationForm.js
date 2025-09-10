@@ -12,6 +12,8 @@ import { Form, H6, PrimaryButton, FieldSelect } from '../../../components';
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 import FieldDateAndTimeInput from './FieldDateAndTimeInput';
 
+import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
+
 import css from './BookingFixedDurationForm.module.css';
 import ConsultationBox from '../../ConsultationBox/ConsultationBox'; // [SKYFARER]
 
@@ -255,11 +257,7 @@ export const BookingFixedDurationForm = props => {
               </div>
             ) : null}
 
-            {fetchLineItemsError ? (
-              <span className={css.sideBarError}>
-                <FormattedMessage id="BookingFixedDurationForm.fetchLineItemsError" />
-              </span>
-            ) : null}
+            <FetchLineItemsError error={fetchLineItemsError} />
 
             <div className={css.submitButton}>
               <PrimaryButton
