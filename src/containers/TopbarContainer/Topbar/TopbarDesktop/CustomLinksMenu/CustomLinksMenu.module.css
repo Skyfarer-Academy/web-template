@@ -9,3 +9,6 @@
   justify-content: right;
   height: 100%;
 }
+.createListingLinkOnly a {
+  color: var(--colorGrey700);
+}

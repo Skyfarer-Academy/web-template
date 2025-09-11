@@ -9,9 +9,22 @@ import css from './CustomLinksMenu.module.css';
 
 const draftId = '00000000-0000-0000-0000-000000000000';
 // Removed Add Listing from links array entirely, it will stay in topbar
-const createListingLinkConfigMaybe = (intl, showLink) =>
-  []; // always empty now
-
+const createListingLinkConfigMaybe = (intl, showLink, currentUser) =>
+  showLink && isInstructor(currentUser)
+    ? [
+        {
+          group: 'primary',
+          text: intl.formatMessage({ id: 'TopbarDesktop.createListing' }),
+          type: 'internal',
+          route: {
+            name: 'EditListingPage',
+            params: { slug: 'draft', id: draftId, type: 'new', tab: 'details' },
+          },
+          highlight: true,
+        },
+      ]
+    : [];
+      
 /**
  * Group links to 2 groups:
  * - priorityLinks (Those primary links that fit into current width of the TopbarDesktop.)
@@ -97,6 +110,7 @@ const calculateContainerWidth = (containerRefTarget, parentWidth) => {
  */
 const CustomLinksMenu = ({
   currentPage,
+  currentUser,
   customLinks = [],
   hasClientSideContentReady,
   intl,
@@ -105,8 +119,12 @@ const CustomLinksMenu = ({
   const containerRef = useRef(null);
   const observer = useRef(null);
   const [mounted, setMounted] = useState(false);
-  const [moreLabelWidth, setMoreLabelWidth] = useState(60);
-  const [links, setLinks] = useState([...customLinks]); // no Add Listing
+  const [moreLabelWidth, setMoreLabelWidth] = useState(0);
+  //const [links, setLinks] = useState([...customLinks]); // no Add Listing
+  const [links, setLinks] = useState([
+      ...createListingLinkConfigMaybe(intl, showCreateListingsLink, currentUser),
+      ...customLinks,
+    ]);
 
   const [layoutData, setLayoutData] = useState({
     priorityLinks: links,
@@ -117,6 +135,13 @@ const CustomLinksMenu = ({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setLinks([
+      ...createListingLinkConfigMaybe(intl, showCreateListingsLink, currentUser),
+      ...customLinks,
+    ]);
+  }, [intl, showCreateListingsLink, customLinks, currentUser]);
 
   useEffect(() => {
     let animationFrameId = null;
@@ -179,27 +204,39 @@ const CustomLinksMenu = ({
 
   const { priorityLinks, menuLinks, containerWidth } = layoutData;
 
+  // If there are no custom links, just render createListing link.
+  if (customLinks?.length === 0 && showCreateListingsLink) {
+    return <CreateListingMenuLink customLinksMenuClass={css.createListingLinkOnly} />;
+  }
+
   const styleMaybe = mounted ? { style: { width: `${containerWidth}px` } } : {};
   const isMeasured = !!links?.[0]?.width;
   const hasMenuLinks = menuLinks?.length > 0;
   const hasPriorityLinks = isMeasured && priorityLinks.length > 0;
 
   return (
-    <div className={css.customLinksMenu} ref={containerRef} {...styleMaybe}>
-      <PriorityLinks links={links} priorityLinks={priorityLinks} setLinks={setLinks} />
-      {hasMenuLinks ? (
-        <LinksMenu
-          id="linksMenu"
-          currentPage={currentPage}
-          links={menuLinks}
-          showMoreLabel={hasPriorityLinks}
-          moreLabelWidth={moreLabelWidth}
-          setMoreLabelWidth={setMoreLabelWidth}
-          intl={intl}
-        />
-      ) : null}
-    </div>
-  );
+  <div className={css.customLinksMenu} ref={containerRef} {...styleMaybe}>
+    {/* Show "Add Listing" button separately for instructors */}
+    {/* {showCreateListingsLink && isInstructor(currentUser) ? (
+      <CreateListingMenuLink customLinksMenuClass={css.createListingLinkOnly} />
+    ) : null} */}
+
+    {/* The rest of the links still go into the dropdown */}
+    <PriorityLinks links={links} priorityLinks={priorityLinks} setLinks={setLinks} />
+    {mounted && hasMenuLinks ? (
+      <LinksMenu
+        id="linksMenu"
+        currentPage={currentPage}
+        links={menuLinks}
+        showMoreLabel={hasPriorityLinks}
+        moreLabelWidth={moreLabelWidth}
+        setMoreLabelWidth={setMoreLabelWidth}
+        intl={intl}
+      />
+    ) : null}
+  </div>
+);
+
 };
 
 export default CustomLinksMenu;

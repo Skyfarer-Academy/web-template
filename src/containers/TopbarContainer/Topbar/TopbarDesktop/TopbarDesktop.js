@@ -63,7 +63,7 @@ const LoginLink = () => {
   );
 };
 
-const AddListingButton = ({ currentUser }) => {
+/*const AddListingButton = ({ currentUser }) => {
   if (!currentUser || !hasPermissionToPostListings(currentUser)) 
     {
     return null;
@@ -75,7 +75,7 @@ const AddListingButton = ({ currentUser }) => {
       </span>
     </NamedLink>
   );
-};
+};*/
 
 const InboxLink = ({ notificationCount, inboxTab }) => {
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
@@ -207,9 +207,9 @@ const TopbarDesktop = props => {
   // ) : null;
   const instructorMatchingButtonLinkMaybe = null;
   
-  const addListingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
-  <AddListingButton currentUser={currentUser} />
-  ) : null;
+  // const addListingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
+  // <AddListingButton currentUser={currentUser} />
+  // ) : null;
   
   // console.log(currentUser?.attributes?.profile?.publicData?.userType);
   // console.log('School user:', currentUser?.attributes?.email);
@@ -258,7 +258,7 @@ const TopbarDesktop = props => {
         linkToExternalSite={config?.topbar?.logoLink}
       />
       {searchFormMaybe}
-      {addListingLinkMaybe}
+      {/* {addListingLinkMaybe} */}
 
       <CustomLinksMenu
         currentPage={currentPage}
