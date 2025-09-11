@@ -69,16 +69,24 @@ export const getPlaceDetails = async (placeId) => {
 
     const origin = placeOrigin(place);
     let bounds;
+    let radius;
 
     if (place.types && origin && (place.types.includes('locality') && place.types.includes('political'))) 
     {
-      // Locality or political entity – 50 km radius
-      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, 25000);
+      // Locality or political entity – 25 km radius
+      radius = 25000;
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius);
     }
     else if(place.types.includes('airport') || place.types.includes('street_address'))
     {
-      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, 10000)
-    } 
+      radius = 10000;
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius)
+    }
+    else if(place.types.includes('administrative_area_level_1') && place.types.includes('political'))
+    {
+      radius = 300000;
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius)
+    }
     else 
     {
       // Fallback – use Google's viewport bounds
@@ -89,6 +97,7 @@ export const getPlaceDetails = async (placeId) => {
       address: place.formattedAddress,
       origin,
       bounds,
+      radius,
       types: place.types,
     });
     
@@ -96,6 +105,7 @@ export const getPlaceDetails = async (placeId) => {
       address: place.formattedAddress,
       origin,
       bounds,
+      radius,
       types: place.types,
     };
   } 
