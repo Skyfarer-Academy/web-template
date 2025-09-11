@@ -267,7 +267,7 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-        />
+      />
 
       {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
       {inboxLinkMaybe}

@@ -121,6 +121,7 @@ const CustomLinksMenu = ({
   const [mounted, setMounted] = useState(false);
   const [moreLabelWidth, setMoreLabelWidth] = useState(0);
   //const [links, setLinks] = useState([...customLinks]); // no Add Listing
+ 
   const [links, setLinks] = useState([
       ...createListingLinkConfigMaybe(intl, showCreateListingsLink, currentUser),
       ...customLinks,
@@ -217,9 +218,9 @@ const CustomLinksMenu = ({
   return (
   <div className={css.customLinksMenu} ref={containerRef} {...styleMaybe}>
     {/* Show "Add Listing" button separately for instructors */}
-    {/* {showCreateListingsLink && isInstructor(currentUser) ? (
+    {showCreateListingsLink && isInstructor(currentUser) ? (
       <CreateListingMenuLink customLinksMenuClass={css.createListingLinkOnly} />
-    ) : null} */}
+    ) : null}
 
     {/* The rest of the links still go into the dropdown */}
     <PriorityLinks links={links} priorityLinks={priorityLinks} setLinks={setLinks} />
