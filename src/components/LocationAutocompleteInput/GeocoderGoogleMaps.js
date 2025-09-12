@@ -144,8 +144,14 @@ class GeocoderGoogleMaps {
         // // type: placeType,
         // // radius,
         // };
-        return place;
-    });
+        return{
+          address: place.address,
+          origin: place.origin,
+          bounds: place.bounds,
+          radius: place.radius, // <- make sure this is accessible
+          types: place.types
+        };    
+      });
   }
 }
 

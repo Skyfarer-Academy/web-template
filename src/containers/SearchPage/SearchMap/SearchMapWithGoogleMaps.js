@@ -566,6 +566,7 @@ class SearchMapWithGoogleMaps extends Component {
       createURLToListing,
       config,
     } = this.props;
+
     return (
       <div
         id={id}
