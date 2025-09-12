@@ -74,12 +74,12 @@ export const getPlaceDetails = async (placeId) => {
     if (place.types && origin && (place.types.includes('locality') && place.types.includes('political'))) 
     {
       // Locality or political entity – 25 km radius
-      radius = 25000;
+      radius = 18500;
       bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius);
     }
     else if(place.types.includes('airport') || place.types.includes('street_address'))
     {
-      radius = 10000;
+      radius = 5000;
       bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius)
     }
     else if(place.types.includes('administrative_area_level_1') && place.types.includes('political'))
