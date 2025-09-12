@@ -90,7 +90,9 @@ export const getPlaceDetails = async (placeId) => {
     else 
     {
       // Fallback – use Google's viewport bounds
-      bounds = placeBounds(place);
+      // bounds = placeBounds(place);
+      radius = 20000; // e.g. 20 km (adjust as you like)
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius);
     }
 
     console.log('Fetched place details:', {
