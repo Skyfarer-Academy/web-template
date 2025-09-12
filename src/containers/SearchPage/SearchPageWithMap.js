@@ -105,6 +105,8 @@ export class SearchPageComponent extends Component {
       isMobileModalOpen: false,
       currentQueryParams: validUrlQueryParamsFromProps(props),
       isSecondaryFiltersOpen: false,
+      customBounds: null,
+      viewportBounds: null,
     };
 
     this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
@@ -124,6 +126,11 @@ export class SearchPageComponent extends Component {
   // Callback to determine if new search is needed
   // when map is moved by user or viewport has changed
   onMapMoveEnd(viewportBoundsChanged, data) {
+
+    if (this.state.customBounds) {
+      this.setState({ customBounds: null });
+    }
+
     const { viewportBounds, viewportCenter } = data;
     const { params: currentPathParams } = this.props;
 
@@ -142,6 +149,9 @@ export class SearchPageComponent extends Component {
     // we start to react to "mapmoveend" events by generating new searches
     // (i.e. 'moveend' event in Mapbox and 'bounds_changed' in Google Maps)
     if (viewportBoundsChanged && isSearchPage) {
+
+      this.setState({viewportBounds});
+
       const { history, location, config } = this.props;
       const { listingFields: listingFieldsConfig } = config?.listing || {};
       const { defaultFilters: defaultFiltersConfig } = config?.search || {};
@@ -164,10 +174,12 @@ export class SearchPageComponent extends Component {
       const originMaybe = isOriginInUse(this.props.config) ? { origin: viewportCenter } : {};
       const dropNonFilterParams = false;
 
+      const effectiveBounds = this.state.customBounds || viewportBounds;
+
       const searchParams = {
         address,
         ...originMaybe,
-        bounds: viewportBounds,
+        bounds: effectiveBounds,
         mapSearch: true,
         ...validFilterParams(rest, filterConfigs, dropNonFilterParams),
       };
@@ -676,7 +688,7 @@ export class SearchPageComponent extends Component {
                   reusableContainerClassName={css.map}
                   rootClassName={css.mapRoot}
                   activeListingId={activeListingId}
-                  bounds={bounds}
+                  bounds={this.state.customBounds || this.state.viewportBounds || bounds}
                   center={origin}
                   isSearchMapOpenOnMobile={this.state.isSearchMapOpenOnMobile}
                   location={location}

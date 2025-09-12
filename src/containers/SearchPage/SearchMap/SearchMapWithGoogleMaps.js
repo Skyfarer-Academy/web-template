@@ -185,38 +185,6 @@ const getPixelPositionOffset = (width, height) => {
   return { x: -1 * (width / 2), y: -1 * (height + 3) };
 };
 
-/*CUSTOM SEARCH RADIUS*/
-
-// Haversine formula: distance in meters between two lat/lng points
-const distanceBetween = (lat1, lng1, lat2, lng2) => {
-  const R = 6371000; // Earth radius in meters
-  const toRad = deg => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
-
-// Filter listings based on origin + radius
-const filterListingsByRadius = (listings, origin, radius) => {
-  if (!origin || !radius) return listings;
-  return listings.filter(listing => {
-    const { geolocation } = listing.attributes;
-    if (!geolocation) return false;
-    const distance = distanceBetween(
-      geolocation.lat,
-      geolocation.lng,
-      origin.lat,
-      origin.lng
-    );
-    return distance <= radius;
-  });
-};
-
-
 /**
  * GoogleMaps need to use Google specific OverlayView components and therefore we need to
  * reduce flickering / rerendering of these overlays through 'shouldComponentUpdate'
@@ -597,12 +565,8 @@ class SearchMapWithGoogleMaps extends Component {
       onListingInfoCardClicked,
       createURLToListing,
       config,
-      selectedPlace,
     } = this.props;
 
-    const filteredlistings = selectedPlace?.origin && selectedPlace?.radius
-                                ? filterListingsByRadius(listings, selectedPlace?.origin, selectedPlace?.radius)
-                                : listings;
     return (
       <div
         id={id}
@@ -613,7 +577,7 @@ class SearchMapWithGoogleMaps extends Component {
         {this.map ? (
           <PriceLabelsAndGroups
             map={this.map}
-            listings={filteredlistings}
+            listings={listings}
             activeListingId={activeListingId}
             infoCardOpen={infoCardOpen}
             onListingClicked={onListingClicked}
