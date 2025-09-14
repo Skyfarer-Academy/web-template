@@ -119,6 +119,7 @@ export const StripePayoutPageComponent = props => {
     payoutDetailsSaveInProgress,
     payoutDetailsSaved,
     params,
+    authScopes,
   } = props;
 
   const { returnURLType } = params || {};
@@ -156,6 +157,12 @@ export const StripePayoutPageComponent = props => {
   const returnedNormallyFromStripe = returnURLType === STRIPE_ONBOARDING_RETURN_URL_SUCCESS;
   const returnedAbnormallyFromStripe = returnURLType === STRIPE_ONBOARDING_RETURN_URL_FAILURE;
   const showVerificationNeeded = stripeConnected && requirementsMissing;
+
+  // Check if user has limited rights and set button titles accordingly
+  const limitedRights = authScopes?.indexOf('user:limited') >= 0;
+  const stripeButtonTitle = limitedRights
+    ? intl.formatMessage({ id: 'StripePayoutPage.submitButtonText' })
+    : null;
 
   // Redirect from success URL to basic path for StripePayoutPage
   if (returnedNormallyFromStripe && stripeConnected && !requirementsMissing) {
@@ -227,6 +234,7 @@ export const StripePayoutPageComponent = props => {
               onSubmit={onPayoutDetailsSubmit}
               onGetStripeConnectAccountLink={handleGetStripeConnectAccountLink}
               stripeConnected={stripeConnected}
+              authScopes={authScopes}
             >
               {stripeConnected && !returnedAbnormallyFromStripe && showVerificationNeeded ? (
                 <StripeConnectAccountStatusBox
@@ -235,15 +243,18 @@ export const StripePayoutPageComponent = props => {
                   onGetStripeConnectAccountLink={handleGetStripeConnectAccountLink(
                     'custom_account_verification'
                   )}
+                  disabled={limitedRights}
+                  title={stripeButtonTitle}
                 />
               ) : stripeConnected && savedCountry && !returnedAbnormallyFromStripe ? (
                 <StripeConnectAccountStatusBox
                   type="verificationSuccess"
                   inProgress={getAccountLinkInProgress}
-                  disabled={payoutDetailsSaveInProgress}
+                  disabled={payoutDetailsSaveInProgress || limitedRights}
                   onGetStripeConnectAccountLink={handleGetStripeConnectAccountLink(
                     'custom_account_update'
                   )}
+                  title={stripeButtonTitle}
                 />
               ) : null}
             </StripeConnectAccountForm>
@@ -266,6 +277,7 @@ const mapStateToProps = state => {
   } = state.stripeConnectAccount;
   const { currentUser } = state.user;
   const { payoutDetailsSaveInProgress, payoutDetailsSaved } = state.StripePayoutPage;
+  const { authScopes } = state.auth;
   return {
     currentUser,
     getAccountLinkInProgress,
@@ -278,6 +290,7 @@ const mapStateToProps = state => {
     payoutDetailsSaveInProgress,
     payoutDetailsSaved,
     scrollingDisabled: isScrollingDisabled(state),
+    authScopes,
   };
 };
 
