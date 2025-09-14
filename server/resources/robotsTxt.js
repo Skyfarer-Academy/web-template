@@ -77,7 +77,7 @@ Disallow: /account
 Disallow: /reset-password
 Disallow: /verify-email
 Disallow: /preview
-Disallow: /styleguide
+Disallow: /styleguide 
 Crawl-Delay: 5
 `;
 
@@ -107,12 +107,12 @@ const sendRobotsTxt = (req, res, robotsTxtPath) => {
     // [SKYFARER]
     // Add noindex,nofollow for Render
     // TODO: Make more generic so it can be used for other platforms too; emergency fix
-    if (
+    /*if (
       !process.env.REACT_APP_ROBOTS_INDEX_RENDER
       && req.hostname.includes('onrender.com')
     ) {
       return res.send('User-agent: *\nDisallow: /\n');
-    }
+    }*/
 
     const readStream = fs.createReadStream(robotsTxtPath, { encoding: 'utf8' });
     const robotsStream = readStream.pipe(modifiedStream);

@@ -299,17 +299,17 @@ export const ServerApp = props => {
       >
         <Provider store={store}>
           <HelmetProvider context={helmetContext}>
-            {
-              // [SKYFARER]
+            
+              {/* // [SKYFARER]
               /**
                 If we're running on Render, let's assume we don't want it indexed
                 TODO: Make more generic so it can be used for other platforms too; emergency fix
-              */
-              !process.env.REACT_APP_ROBOTS_INDEX_RENDER &&
+              
+              /*!process.env.REACT_APP_ROBOTS_INDEX_RENDER &&
               hostname.includes('onrender.com') ? (
                 <Helmet><meta name="robots" content="noindex,nofollow" /></Helmet>
-              ) : null
-            }
+              ) : null*/}
+
             <IncludeScripts config={appConfig} />
             <StaticRouter location={url} context={context}>
               <Routes />
