@@ -5,7 +5,6 @@ import { FormattedMessage } from '../../util/reactIntl';
 import { ResponsiveImage, Modal } from '../../components';
 
 import ImageCarousel from './ImageCarousel/ImageCarousel';
-import ActionBarMaybe from './ActionBarMaybe';
 
 import css from './ListingPage.module.css';
 
@@ -19,14 +18,14 @@ const SectionHero = props => {
     title,
     listing,
     isOwnListing,
-    editParams,
-    currentUser,
+    currentUser, // [SKYFARER]
     handleViewPhotosClick,
     imageCarouselOpen,
     onImageCarouselClose,
     onManageDisableScrolling,
-    noPayoutDetailsSetWithOwnListing,
-    onToggleFavorites,
+    noPayoutDetailsSetWithOwnListing, // [SKYFARER]
+    onToggleFavorites, // [SKYFARER]
+    actionBar,
   } = props;
 
   const [showToast, setShowToast] = useState(false);
@@ -73,11 +72,11 @@ const SectionHero = props => {
       } />
     </svg>
   );
-  
+
   const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
     listing.id.uuid
   );
-  
+
   const toggleFavorites = e => {
   e.stopPropagation(); // Prevent image click
   if (typeof onToggleFavorites === 'function') {
@@ -109,23 +108,7 @@ const SectionHero = props => {
       <div className={css.imageWrapperForSectionHero} onClick={handleViewPhotosClick}>
         {mounted && listing.id && isOwnListing ? (
           <div onClick={e => e.stopPropagation()} className={css.actionBarContainerForHeroLayout}>
-            {noPayoutDetailsSetWithOwnListing ? (
-              <ActionBarMaybe
-                className={css.actionBarForHeroLayout}
-                isOwnListing={isOwnListing}
-                listing={listing}
-                showNoPayoutDetailsSet={noPayoutDetailsSetWithOwnListing}
-                currentUser={currentUser}
-              />
-            ) : null}
-
-            <ActionBarMaybe
-              className={css.actionBarForHeroLayout}
-              isOwnListing={isOwnListing}
-              listing={listing}
-              editParams={editParams}
-              currentUser={currentUser}
-            />
+            {actionBar}
           </div>
         ) : null}
 
