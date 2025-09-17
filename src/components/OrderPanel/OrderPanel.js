@@ -518,6 +518,7 @@ const OrderPanel = props => {
           <BookingTimeForm
             seatsEnabled={seatsEnabled}
             className={css.bookingForm}
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             formId="OrderPanelBookingTimeForm"
             lineItemUnitType={lineItemUnitType}
             onSubmit={onSubmit}

@@ -40,6 +40,7 @@ const { Money } = sdkTypes;
 const handleFetchLineItems = props => formValues => {
   const {
     listingId,
+    categoryLevel1,
     isOwnListing,
     fetchLineItemsInProgress,
     onFetchTransactionLineItems,
@@ -68,6 +69,7 @@ const handleFetchLineItems = props => formValues => {
     onFetchTransactionLineItems({
       orderData,
       listingId,
+      categoryLevel1,
       isOwnListing,
     });
   }
@@ -163,6 +165,7 @@ export const BookingTimeForm = props => {
           handleSubmit,
           isOwnListing,
           listingId,
+          categoryLevel1,
           values,
           monthlyTimeSlots,
           timeSlotsForDate,
@@ -178,6 +181,7 @@ export const BookingTimeForm = props => {
         } = formRenderProps;
         
         console.log("BookingTimeForm for listingId:", listingId);
+        console.log("Listing categoryLevel1:", categoryLevel1);
 
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
@@ -356,7 +360,7 @@ export const BookingTimeForm = props => {
                 inProgress={fetchLineItemsInProgress}
                 disabled={submitDisabled}
               >
-                <FormattedMessage id="BookingTimeForm1.requestToBook" />
+                <FormattedMessage id="BookingTimeForm.requestToBook" />
               </PrimaryButton>
             </div>
             
@@ -379,6 +383,13 @@ export const BookingTimeForm = props => {
               </div>) : null
             }
             <div>Hello</div>
+            {categoryLevel1 &&
+              ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "DPE-Checkride"].includes(categoryLevel1) && (
+                <div className={css.adBannerWrapper}>
+                  <img src="/static/images/Avemco_banner.png" alt="Avemco Insurance Ad" className={css.adBanner} />
+                </div>
+              )
+            }
           </Form>
         );
       }}
