@@ -1,3 +1,5 @@
+console.log("Avemco banner page");
+
 import React, { useState } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
@@ -43,6 +45,8 @@ const handleFetchLineItems = props => formValues => {
     onFetchTransactionLineItems,
     seatsEnabled,
   } = props;
+
+  console.log("Handle---->", handleFetchLineItems);
   const { bookingStartTime, bookingEndTime, seats, priceVariantName } = formValues.values;
   const startDate = bookingStartTime ? timestampToDate(bookingStartTime) : null;
   const endDate = bookingEndTime ? timestampToDate(bookingEndTime) : null;
@@ -172,6 +176,8 @@ export const BookingTimeForm = props => {
           authorDisplayName, // [SKYFARER]
           voucher, // [SKYFARER]
         } = formRenderProps;
+        
+        console.log("BookingTimeForm for listingId:", listingId);
 
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
@@ -350,10 +356,10 @@ export const BookingTimeForm = props => {
                 inProgress={fetchLineItemsInProgress}
                 disabled={submitDisabled}
               >
-                <FormattedMessage id="BookingTimeForm.requestToBook" />
+                <FormattedMessage id="BookingTimeForm1.requestToBook" />
               </PrimaryButton>
             </div>
-
+            
             <p className={css.finePrint}>
               {payoutDetailsWarning ? (
                 payoutDetailsWarning
@@ -372,6 +378,7 @@ export const BookingTimeForm = props => {
                 <ConsultationBox onContactUser={onContactUser} authorDisplayName={authorDisplayName} />
               </div>) : null
             }
+            <div>Hello</div>
           </Form>
         );
       }}
