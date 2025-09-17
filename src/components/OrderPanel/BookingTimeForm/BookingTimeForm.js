@@ -182,7 +182,7 @@ export const BookingTimeForm = props => {
         
         console.log("BookingTimeForm for listingId:", listingId);
         console.log("Listing categoryLevel1:", categoryLevel1);
-
+        
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
         const startDate = startTime ? timestampToDate(startTime) : null;
