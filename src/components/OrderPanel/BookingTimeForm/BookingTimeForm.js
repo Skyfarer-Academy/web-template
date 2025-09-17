@@ -382,7 +382,6 @@ export const BookingTimeForm = props => {
                 <ConsultationBox onContactUser={onContactUser} authorDisplayName={authorDisplayName} />
               </div>) : null
             }
-            <div>Hello</div>
             {categoryLevel1 &&
               ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "DPE-Checkride"].includes(categoryLevel1) && (
                 <div className={css.adBannerWrapper}>

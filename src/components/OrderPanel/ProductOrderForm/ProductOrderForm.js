@@ -47,7 +47,7 @@ const handleFetchLineItems = ({
   isOwnListing,
   fetchLineItemsInProgress,
   onFetchTransactionLineItems,
-  voucherCode, // [SKYFARER]
+  voucherCode, // [SKYFARER],
 }) => {
   const stockReservationQuantity = Number.parseInt(quantity, 10);
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
@@ -151,7 +151,11 @@ const renderForm = formRenderProps => {
     config, // [SKYFARER]
     currentUser, // [SKYFARER]
     currentUserHasOrders, // [SKYFARER]
+    categoryLevel1,
   } = formRenderProps;
+          
+  console.log("ProductOrderForm for listingId:", listingId);
+  console.log("Listing categoryLevel1:", categoryLevel1);
 
   // [SKYFARER]
   if (typeof window !== 'undefined') import('@mathiscode/voucherify-react-widget/dist/voucherify.css');
@@ -386,6 +390,13 @@ const renderForm = formRenderProps => {
             <FormattedMessage id="ProductOrderForm.ctaButtonNoStock" />
           )}
         </PrimaryButton>
+        {categoryLevel1 &&
+          ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "DPE-Checkride"].includes(categoryLevel1) && (
+            <div className={css.adBannerWrapper}>
+              <img src="/static/images/Avemco_banner.png" alt="Avemco Insurance Ad" className={css.adBanner} />
+            </div>
+            )
+        }
       </div>
       <p className={css.finePrint}>
         {payoutDetailsWarning ? (

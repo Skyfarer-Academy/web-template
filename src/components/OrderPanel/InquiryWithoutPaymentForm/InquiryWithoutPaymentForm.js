@@ -10,7 +10,10 @@ import css from './InquiryWithoutPaymentForm.module.css';
 
 const renderForm = formRenderProps => {
   // FormRenderProps from final-form
-  const { formId, className, rootClassName, handleSubmit } = formRenderProps;
+  const { formId, className, rootClassName, handleSubmit, categoryLevel1 } = formRenderProps;
+
+  // console.log("ProductOrderForm for listingId:", listingId);
+  console.log("Listing categoryLevel1:", categoryLevel1);
   const classes = classNames(rootClassName || css.root, className);
 
   return (
@@ -20,6 +23,13 @@ const renderForm = formRenderProps => {
           <FormattedMessage id="InquiryWithoutPaymentForm.ctaButton" />
         </PrimaryButton>
       </div>
+      {categoryLevel1 &&
+        ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "DPE-Checkride"].includes(categoryLevel1) && (
+          <div className={css.adBannerWrapper}>
+            <img src="/static/images/Avemco_banner.png" alt="Avemco Insurance Ad" className={css.adBanner} />
+          </div>
+        )
+      }
     </Form>
   );
 };

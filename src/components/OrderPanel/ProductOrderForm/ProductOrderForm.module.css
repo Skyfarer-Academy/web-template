@@ -86,3 +86,18 @@
     padding: 0;
   }
 }
+
+.adBannerWrapper {
+  width: 100%;
+  /* display: flex; */
+  margin-top: 60px;  
+  margin-bottom: 24px; 
+  text-align: center;
+}
+
+.adBanner {
+  max-width: 350px;
+  /* width: 100%;   */
+  height: auto;   
+  /* border-radius: 8px;  */
+}  

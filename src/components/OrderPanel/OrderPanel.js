@@ -575,10 +575,11 @@ const OrderPanel = props => {
             config={config} // [SKYFARER]
             currentUser={currentUser} // [SKYFARER]
             currentUserHasOrders={currentUserHasOrders} // [SKYFARER]
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             {...sharedProps}
           />
         ) : showInquiryForm ? (
-          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
+          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} categoryLevel1={listing?.attributes?.publicData?.categoryLevel1} />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
             <FormattedMessage id="OrderPanel.unknownTransactionProcess" />
