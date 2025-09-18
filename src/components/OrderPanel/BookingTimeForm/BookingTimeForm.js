@@ -383,12 +383,24 @@ export const BookingTimeForm = props => {
               </div>) : null
             }
             {categoryLevel1 &&
-              ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "DPE-Checkride"].includes(categoryLevel1) && (
+              ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "dpe-checkride"].includes(categoryLevel1) && (
                 <div className={css.adBannerWrapper}>
-                  <img src="/static/images/Avemco_banner.png" alt="Avemco Insurance Ad" className={css.adBanner} />
+                  <img
+                    src="/static/images/Avemco_banner.png"
+                    alt="Avemco Insurance Ad"
+                    className={css.adBanner}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() =>
+                      window.open(
+                        'https://www.avemco.com/products/renter?partner=SF17',
+                        '_blank',
+                        'noopener,noreferrer'
+                      )
+                    }
+                  />
                 </div>
               )
-            }
+            }           
           </Form>
         );
       }}

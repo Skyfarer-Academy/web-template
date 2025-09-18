@@ -150,7 +150,11 @@ export const BookingFixedDurationForm = props => {
           onContactUser, // [SKYFARER]
           authorDisplayName, // [SKYFARER],
           voucher, // [SKYFARER]
+          categoryLevel1,
         } = formRenderProps;
+
+        console.log("Bookin fixed duration form for listingId:", listingId);
+        console.log("Listing categoryLevel1:", categoryLevel1);
 
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
@@ -286,6 +290,25 @@ export const BookingFixedDurationForm = props => {
               !isOwnListing && onContactUser ? (<div className={css.submitButton}>
                 <ConsultationBox onContactUser={onContactUser} authorDisplayName={authorDisplayName} />
               </div>) : null
+            }
+            {categoryLevel1 &&
+              ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "dpe-checkride"].includes(categoryLevel1) && (
+                <div className={css.adBannerWrapper}>
+                  <img
+                    src="/static/images/Avemco_banner.png"
+                    alt="Avemco Insurance Ad"
+                    className={css.adBanner}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() =>
+                      window.open(
+                        'https://www.avemco.com/products/renter?partner=SF17',
+                        '_blank',
+                        'noopener,noreferrer'
+                      )
+                    }
+                  />
+                </div>
+              )
             }
           </Form>
         );

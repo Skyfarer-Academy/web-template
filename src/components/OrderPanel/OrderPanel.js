@@ -511,6 +511,7 @@ const OrderPanel = props => {
             timeZone={timeZone}
             onContactUser={onContactUser} // [SKYFARER]
             authorDisplayName={authorDisplayName} // [SKYFARER]
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             {...priceVariantsMaybe}
             {...sharedProps}
           />
