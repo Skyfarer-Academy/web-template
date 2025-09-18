@@ -304,11 +304,15 @@ export const ServerApp = props => {
               /**
                 If we're running on Render, let's assume we don't want it indexed
                 TODO: Make more generic so it can be used for other platforms too; emergency fix
+
+                // 2025-09-14: Disabled for Bing indexing troubleshooting per:
+                // https://skyfareracademy.monday.com/boards/7017783486/pulses/10047350972
+                // https://skyfareracademy.monday.com/boards/7017783486/pulses/10043133036
               */
-              !process.env.REACT_APP_ROBOTS_INDEX_RENDER &&
-              hostname.includes('onrender.com') ? (
-                <Helmet><meta name="robots" content="noindex,nofollow" /></Helmet>
-              ) : null
+              // !process.env.REACT_APP_ROBOTS_INDEX_RENDER &&
+              // hostname.includes('onrender.com') ? (
+              //   <Helmet><meta name="robots" content="noindex,nofollow" /></Helmet>
+              // ) : null
             }
             <IncludeScripts config={appConfig} />
             <StaticRouter location={url} context={context}>
