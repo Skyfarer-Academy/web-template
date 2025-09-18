@@ -1,3 +1,5 @@
+console.log("Avemco banner page");
+
 import React, { useState } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
@@ -28,7 +30,7 @@ import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
 
 import css from './BookingTimeForm.module.css';
 import ConsultationBox from '../../ConsultationBox/ConsultationBox'; // [SKYFARER]
-
+import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner.js';
 const { Money } = sdkTypes;
 
 // When the values of the form are updated we need to fetch
@@ -38,11 +40,14 @@ const { Money } = sdkTypes;
 const handleFetchLineItems = props => formValues => {
   const {
     listingId,
+    categoryLevel1,
     isOwnListing,
     fetchLineItemsInProgress,
     onFetchTransactionLineItems,
     seatsEnabled,
   } = props;
+
+  console.log("Handle---->", handleFetchLineItems);
   const { bookingStartTime, bookingEndTime, seats, priceVariantName } = formValues.values;
   const startDate = bookingStartTime ? timestampToDate(bookingStartTime) : null;
   const endDate = bookingEndTime ? timestampToDate(bookingEndTime) : null;
@@ -64,6 +69,7 @@ const handleFetchLineItems = props => formValues => {
     onFetchTransactionLineItems({
       orderData,
       listingId,
+      categoryLevel1,
       isOwnListing,
     });
   }
@@ -159,6 +165,7 @@ export const BookingTimeForm = props => {
           handleSubmit,
           isOwnListing,
           listingId,
+          categoryLevel1,
           values,
           monthlyTimeSlots,
           timeSlotsForDate,
@@ -172,7 +179,10 @@ export const BookingTimeForm = props => {
           authorDisplayName, // [SKYFARER]
           voucher, // [SKYFARER]
         } = formRenderProps;
-
+        
+        // console.log("BookingTimeForm for listingId:", listingId);
+        // console.log("Listing categoryLevel1:", categoryLevel1);
+        
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
         const startDate = startTime ? timestampToDate(startTime) : null;
@@ -353,7 +363,7 @@ export const BookingTimeForm = props => {
                 <FormattedMessage id="BookingTimeForm.requestToBook" />
               </PrimaryButton>
             </div>
-
+            
             <p className={css.finePrint}>
               {payoutDetailsWarning ? (
                 payoutDetailsWarning
@@ -372,6 +382,7 @@ export const BookingTimeForm = props => {
                 <ConsultationBox onContactUser={onContactUser} authorDisplayName={authorDisplayName} />
               </div>) : null
             }
+            <AvemcoBanner categoryLevel1={categoryLevel1} />     
           </Form>
         );
       }}

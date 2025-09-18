@@ -31,7 +31,7 @@ import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe'
 import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
 
 import css from './ProductOrderForm.module.css';
-
+import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner.js';
 const { Money } = sdkTypes;
 
 // Browsers can't render huge number of select options.
@@ -47,7 +47,7 @@ const handleFetchLineItems = ({
   isOwnListing,
   fetchLineItemsInProgress,
   onFetchTransactionLineItems,
-  voucherCode, // [SKYFARER]
+  voucherCode, // [SKYFARER],
 }) => {
   const stockReservationQuantity = Number.parseInt(quantity, 10);
   const deliveryMethodMaybe = deliveryMethod ? { deliveryMethod } : {};
@@ -151,7 +151,11 @@ const renderForm = formRenderProps => {
     config, // [SKYFARER]
     currentUser, // [SKYFARER]
     currentUserHasOrders, // [SKYFARER]
+    categoryLevel1,
   } = formRenderProps;
+          
+  // console.log("ProductOrderForm for listingId:", listingId);
+  // console.log("Listing categoryLevel1:", categoryLevel1);
 
   // [SKYFARER]
   if (typeof window !== 'undefined') import('@mathiscode/voucherify-react-widget/dist/voucherify.css');
@@ -351,7 +355,7 @@ const renderForm = formRenderProps => {
                 metadata: {
                   userType: currentUser.attributes.profile.publicData.userType,
                   createdAt: currentUser.attributes.createdAt.toString()
-                }
+                }          
               }}
             />
 
@@ -386,6 +390,7 @@ const renderForm = formRenderProps => {
             <FormattedMessage id="ProductOrderForm.ctaButtonNoStock" />
           )}
         </PrimaryButton>
+        <AvemcoBanner categoryLevel1={categoryLevel1} />
       </div>
       <p className={css.finePrint}>
         {payoutDetailsWarning ? (

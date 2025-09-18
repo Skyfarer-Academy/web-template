@@ -22,7 +22,7 @@ const ConsultationBox = props => {
       }
       }>
         <FormattedMessage id='BookingTimeForm.requestFreeConsultation'
-                          values={{ authorDisplayName }} />
+          values={{ authorDisplayName }} />
       </InlineTextButton>
     </div>
   </div>;
