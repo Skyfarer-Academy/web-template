@@ -511,6 +511,7 @@ const OrderPanel = props => {
             timeZone={timeZone}
             onContactUser={onContactUser} // [SKYFARER]
             authorDisplayName={authorDisplayName} // [SKYFARER]
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             {...priceVariantsMaybe}
             {...sharedProps}
           />
@@ -518,6 +519,7 @@ const OrderPanel = props => {
           <BookingTimeForm
             seatsEnabled={seatsEnabled}
             className={css.bookingForm}
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             formId="OrderPanelBookingTimeForm"
             lineItemUnitType={lineItemUnitType}
             onSubmit={onSubmit}
@@ -574,10 +576,11 @@ const OrderPanel = props => {
             config={config} // [SKYFARER]
             currentUser={currentUser} // [SKYFARER]
             currentUserHasOrders={currentUserHasOrders} // [SKYFARER]
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             {...sharedProps}
           />
         ) : showInquiryForm ? (
-          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
+          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} categoryLevel1={listing?.attributes?.publicData?.categoryLevel1} />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
             <FormattedMessage id="OrderPanel.unknownTransactionProcess" />

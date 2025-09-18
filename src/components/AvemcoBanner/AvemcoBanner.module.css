@@ -1,0 +1,13 @@
+.adBannerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
+  margin-bottom: 24px;
+}
+
+.adBanner {
+  max-width: 280;
+  width: 100%;
+  height: auto;
+}
