@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { Form, PrimaryButton } from '../..';
 
 import css from './InquiryWithoutPaymentForm.module.css';
-
+import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner';
 const renderForm = formRenderProps => {
   // FormRenderProps from final-form
   const { formId, className, rootClassName, handleSubmit, categoryLevel1 } = formRenderProps;
@@ -23,25 +23,7 @@ const renderForm = formRenderProps => {
           <FormattedMessage id="InquiryWithoutPaymentForm.ctaButton" />
         </PrimaryButton>
       </div>
-        {categoryLevel1 &&
-          ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "dpe-checkride"].includes(categoryLevel1) && (
-            <div className={css.adBannerWrapper}>
-              <img
-                src="/static/images/Avemco_banner.png"
-                alt="Avemco Insurance Ad"
-                className={css.adBanner}
-                style={{ cursor: 'pointer' }}
-                onClick={() =>
-                  window.open(
-                    'https://www.avemco.com/products/renter?partner=SF17',
-                    '_blank',
-                    'noopener,noreferrer'
-                  )
-                }
-              />
-            </div>
-          )
-        }
+      <AvemcoBanner categoryLevel1={categoryLevel1} />
     </Form>
   );
 };

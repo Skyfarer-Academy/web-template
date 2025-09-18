@@ -31,7 +31,7 @@ import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe'
 import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
 
 import css from './ProductOrderForm.module.css';
-
+import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner.js';
 const { Money } = sdkTypes;
 
 // Browsers can't render huge number of select options.
@@ -154,8 +154,8 @@ const renderForm = formRenderProps => {
     categoryLevel1,
   } = formRenderProps;
           
-  console.log("ProductOrderForm for listingId:", listingId);
-  console.log("Listing categoryLevel1:", categoryLevel1);
+  // console.log("ProductOrderForm for listingId:", listingId);
+  // console.log("Listing categoryLevel1:", categoryLevel1);
 
   // [SKYFARER]
   if (typeof window !== 'undefined') import('@mathiscode/voucherify-react-widget/dist/voucherify.css');
@@ -390,25 +390,7 @@ const renderForm = formRenderProps => {
             <FormattedMessage id="ProductOrderForm.ctaButtonNoStock" />
           )}
         </PrimaryButton>
-        {categoryLevel1 &&
-          ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "dpe-checkride"].includes(categoryLevel1) && (
-            <div className={css.adBannerWrapper}>
-              <img
-                src="/static/images/Avemco_banner.png"
-                alt="Avemco Insurance Ad"
-                className={css.adBanner}
-                style={{ cursor: 'pointer' }}
-                onClick={() =>
-                  window.open(
-                    'https://www.avemco.com/products/renter?partner=SF17',
-                    '_blank',
-                    'noopener,noreferrer'
-                  )
-                }
-              />
-            </div>
-          )
-        }
+        <AvemcoBanner categoryLevel1={categoryLevel1} />
       </div>
       <p className={css.finePrint}>
         {payoutDetailsWarning ? (

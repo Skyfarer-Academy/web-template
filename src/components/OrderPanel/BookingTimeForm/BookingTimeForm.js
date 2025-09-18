@@ -30,7 +30,7 @@ import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
 
 import css from './BookingTimeForm.module.css';
 import ConsultationBox from '../../ConsultationBox/ConsultationBox'; // [SKYFARER]
-
+import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner.js';
 const { Money } = sdkTypes;
 
 // When the values of the form are updated we need to fetch
@@ -180,8 +180,8 @@ export const BookingTimeForm = props => {
           voucher, // [SKYFARER]
         } = formRenderProps;
         
-        console.log("BookingTimeForm for listingId:", listingId);
-        console.log("Listing categoryLevel1:", categoryLevel1);
+        // console.log("BookingTimeForm for listingId:", listingId);
+        // console.log("Listing categoryLevel1:", categoryLevel1);
         
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
@@ -382,25 +382,7 @@ export const BookingTimeForm = props => {
                 <ConsultationBox onContactUser={onContactUser} authorDisplayName={authorDisplayName} />
               </div>) : null
             }
-            {categoryLevel1 &&
-              ["Instructors-Flight-Schools-Clubs", "Flight-Schools", "Specific-Training-In-Person", "dpe-checkride"].includes(categoryLevel1) && (
-                <div className={css.adBannerWrapper}>
-                  <img
-                    src="/static/images/Avemco_banner.png"
-                    alt="Avemco Insurance Ad"
-                    className={css.adBanner}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() =>
-                      window.open(
-                        'https://www.avemco.com/products/renter?partner=SF17',
-                        '_blank',
-                        'noopener,noreferrer'
-                      )
-                    }
-                  />
-                </div>
-              )
-            }           
+            <AvemcoBanner categoryLevel1={categoryLevel1} />     
           </Form>
         );
       }}
