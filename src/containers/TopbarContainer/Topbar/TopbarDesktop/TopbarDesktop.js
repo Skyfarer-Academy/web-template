@@ -22,7 +22,6 @@ import css from './TopbarDesktop.module.css';
 const SignupLink = () => {
   return (
     <NamedLink name="SignupPage" className={css.topbarLink}>
-    <NamedLink name="SignupPage" className={css.topbarLink}>
       <span className={css.topbarLinkLabel}>
         <FormattedMessage id="TopbarDesktop.signup" />
       </span>
@@ -65,7 +64,6 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {showManageListingsLink ? (
         {showManageListingsLink ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
@@ -213,7 +211,6 @@ const TopbarDesktop = props => {
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-      />
       />
 
       {inboxLinkMaybe}

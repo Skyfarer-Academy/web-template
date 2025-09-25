@@ -21,7 +21,6 @@ const UserNav = props => {
   const classes = classNames(rootClassName || css.root, className);
 
   const manageListingsTabMaybe = showManageListingsLink
-  const manageListingsTabMaybe = showManageListingsLink
     ? [
         {
           text: <FormattedMessage id="UserNav.yourListings" />,
