@@ -19,7 +19,7 @@ const createListingLinkConfigMaybe = (intl, showLink) =>
             name: 'EditListingPage',
             params: { slug: 'draft', id: draftId, type: 'new', tab: 'details' },
           },
-          highlight: true,
+          highlight: false,
         },
       ]
     : [];
