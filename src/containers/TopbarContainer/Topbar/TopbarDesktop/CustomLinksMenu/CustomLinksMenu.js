@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { isInstructor } from '../../../../../util/skyfarer';
 
 import PriorityLinks, { CreateListingMenuLink } from './PriorityLinks';
 import LinksMenu from './LinksMenu';
@@ -10,12 +9,24 @@ import css from './CustomLinksMenu.module.css';
 const draftId = '00000000-0000-0000-0000-000000000000';
 // Removed Add Listing from links array entirely, it will stay in topbar
 const createListingLinkConfigMaybe = (intl, showLink) =>
-  []; // always empty now
-
+  showLink
+    ? [
+        {
+          group: 'primary',
+          text: intl.formatMessage({ id: 'TopbarDesktop.createListing' }),
+          type: 'internal',
+          route: {
+            name: 'EditListingPage',
+            params: { slug: 'draft', id: draftId, type: 'new', tab: 'details' },
+          },
+          highlight: true,
+        },
+      ]
+    : [];
 /**
  * Group links to 2 groups:
  * - priorityLinks (Those primary links that fit into current width of the TopbarDesktop.)
- * - menuLinks (The rest of the links that are shown inside a "More" menu.)
+ * - menuLinks (The rest of the links that are shown inside dropdown menu.)
  *
  * @param {*} links array of link configs in an order where primary group is shown first
  * @param {*} containerWidth width reserved for the CustomLinksMenu component
@@ -105,8 +116,11 @@ const CustomLinksMenu = ({
   const containerRef = useRef(null);
   const observer = useRef(null);
   const [mounted, setMounted] = useState(false);
-  const [moreLabelWidth, setMoreLabelWidth] = useState(60);
-  const [links, setLinks] = useState([...customLinks]); // no Add Listing
+  const [moreLabelWidth, setMoreLabelWidth] = useState(0);
+  const [links, setLinks] = useState([
+    ...createListingLinkConfigMaybe(intl, showCreateListingsLink),
+    ...customLinks,
+  ]);
 
   const [layoutData, setLayoutData] = useState({
     priorityLinks: links,
@@ -178,7 +192,11 @@ const CustomLinksMenu = ({
   }, [containerRef, hasClientSideContentReady, moreLabelWidth, links]);
 
   const { priorityLinks, menuLinks, containerWidth } = layoutData;
-
+  
+  // If there are no custom links, just render createListing link.
+  if (customLinks?.length === 0 && showCreateListingsLink) {
+    return <CreateListingMenuLink customLinksMenuClass={css.createListingLinkOnly} />;
+  }
   const styleMaybe = mounted ? { style: { width: `${containerWidth}px` } } : {};
   const isMeasured = !!links?.[0]?.width;
   const hasMenuLinks = menuLinks?.length > 0;
@@ -187,7 +205,7 @@ const CustomLinksMenu = ({
   return (
     <div className={css.customLinksMenu} ref={containerRef} {...styleMaybe}>
       <PriorityLinks links={links} priorityLinks={priorityLinks} setLinks={setLinks} />
-      {hasMenuLinks ? (
+      {mounted && hasMenuLinks ? (
         <LinksMenu
           id="linksMenu"
           currentPage={currentPage}

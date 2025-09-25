@@ -3,7 +3,6 @@ import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routing/routeConfiguration';
 import { LinkTabNavHorizontal } from '../../components';
-import { isInstructor } from '../../util/skyfarer';
 
 import css from './UserNav.module.css';
 
@@ -18,10 +17,10 @@ import css from './UserNav.module.css';
  * @returns {JSX.Element} User navigation component
  */
 const UserNav = props => {
-  const { className, rootClassName, currentPage, showManageListingsLink, currentUser } = props;
+  const { className, rootClassName, currentPage, showManageListingsLink } = props;
   const classes = classNames(rootClassName || css.root, className);
 
-  const manageListingsTabMaybe = isInstructor(currentUser)
+  const manageListingsTabMaybe = showManageListingsLink
     ? [
         {
           text: <FormattedMessage id="UserNav.yourListings" />,
@@ -51,7 +50,7 @@ const UserNav = props => {
         name: 'ContactDetailsPage',
       },
     },
-    {
+    {// [SKYFARER]
       text: <FormattedMessage id="UserNav.favoriteListing" />,
       selected: currentPage === 'FavoriteListingPage',
       linkProps: {
