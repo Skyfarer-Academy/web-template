@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
-import { FormattedMessage, intlShape } from '../../../../util/reactIntl';
-import { isInstructor } from '../../../../util/skyfarer';
-import { hasPermissionToPostListings } from '../../../../util/userHelpers';
-
-import {
-  ACCOUNT_SETTINGS_PAGES
-} from '../../../../routing/routeConfiguration';
-import { propTypes } from '../../../../util/types';
+import { FormattedMessage } from '../../../../util/reactIntl';
+import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
 import {
   Avatar,
   InlineTextButton,
@@ -18,36 +12,18 @@ import {
   MenuContent,
   MenuItem,
   NamedLink,
-  PrimaryButtonInline, // [SKYFARER]
 } from '../../../../components';
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
 
 import css from './TopbarDesktop.module.css';
-import SparklyBackground from '../../../../assets/sparkly-background.jpg'; // [SKYFARER]
-
-const isLowerEnv = process.env.REACT_APP_IS_LOWER_ENV === 'true'; // [SKYFARER]
-
-// [SKYFARER]
-const InstructorMatchingButtonLink = () => {
-  return (
-    <div className={css.topbarButtonWrapper}>
-      <NamedLink name='AIMatchingPage'>
-        <PrimaryButtonInline style={{backgroundImage: `url(${SparklyBackground})`, backgroundPosition: '50% 35%'}}>
-          <FormattedMessage style={{all: "unset"}} id='TopbarDesktop.ai'/>
-        </PrimaryButtonInline>
-      </NamedLink>
-    </div>
-  );
-};
-// [/SKYFARER]
 
 const SignupLink = () => {
   return (
-    <NamedLink name='SignupPage' className={css.topbarLink}>
+    <NamedLink name="SignupPage" className={css.topbarLink}>
       <span className={css.topbarLinkLabel}>
-        <FormattedMessage id='TopbarDesktop.signup' />
+        <FormattedMessage id="TopbarDesktop.signup" />
       </span>
     </NamedLink>
   );
@@ -58,20 +34,6 @@ const LoginLink = () => {
     <NamedLink name="LoginPage" className={css.topbarLink}>
       <span className={css.topbarLinkLabel}>
         <FormattedMessage id="TopbarDesktop.login" />
-      </span>
-    </NamedLink>
-  );
-};
-
-const AddListingButton = ({ currentUser }) => {
-  if (!currentUser || !hasPermissionToPostListings(currentUser)) 
-    {
-    return null;
-  }
-  return (
-      <NamedLink name="NewListingPage" className={css.topbarLink} >
-      <span className={css.topbarLinkLabel}>
-        <FormattedMessage id="TopbarDesktop.createListing" defaultMessage="Add a new Listing" />
       </span>
     </NamedLink>
   );
@@ -102,7 +64,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {showManageListingsLink && isInstructor(currentUser) ? (
+        {showManageListingsLink ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -114,7 +76,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </MenuItem>
         ) : null}
         <MenuItem key="ProfileSettingsPage">
-          <NamedLink
+          <NamedLink // [SKYFARER]
             className={classNames(css.menuLink, currentPageClass('FavoriteListingPage'))}
             name="FavoriteListingPage"
           >
@@ -201,22 +163,6 @@ const TopbarDesktop = props => {
   const giveSpaceForSearch = customLinks == null || customLinks?.length === 0;
   const classes = classNames(rootClassName || css.root, className);
 
-  // [SKYFARER]
-  // const instructorMatchingButtonLinkMaybe = isAuthenticated && isLowerEnv ? ( // todo remove env flag once validated
-  //   <InstructorMatchingButtonLink/>
-  // ) : null;
-  const instructorMatchingButtonLinkMaybe = null;
-  
-  const addListingLinkMaybe = authenticatedOnClientSide && isInstructor(currentUser) ? (
-  <AddListingButton currentUser={currentUser} />
-  ) : null;
-  
-  // console.log(currentUser?.attributes?.profile?.publicData?.userType);
-  // console.log('School user:', currentUser?.attributes?.email);
-  // console.log('authenticatedOnClientSide:', authenticatedOnClientSide);
-  // console.log('isInstructor:', currentUser ? isInstructor(currentUser) : false);
-  // console.log('hasPermissionToPostListings:', currentUser ? hasPermissionToPostListings(currentUser) : false);
-
   const inboxLinkMaybe = authenticatedOnClientSide ? (
     <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
   ) : null;
@@ -258,18 +204,15 @@ const TopbarDesktop = props => {
         linkToExternalSite={config?.topbar?.logoLink}
       />
       {searchFormMaybe}
-      {addListingLinkMaybe}
 
       <CustomLinksMenu
         currentPage={currentPage}
-        currentUser={currentUser}
         customLinks={customLinks}
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
-        />
+      />
 
-      {instructorMatchingButtonLinkMaybe}{/* [SKYFARER] */}
       {inboxLinkMaybe}
       {profileMenuMaybe}
       {signupLinkMaybe}
@@ -277,7 +220,5 @@ const TopbarDesktop = props => {
     </nav>
   );
 };
-
-
 
 export default TopbarDesktop;

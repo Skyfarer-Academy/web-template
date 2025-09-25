@@ -1,6 +1,5 @@
 import { EXTENDED_DATA_SCHEMA_TYPES } from './types';
 import { getFieldValue } from './fieldHelpers';
-import { isInstructor } from './skyfarer';
 
 /**
  * Get the namespaced attribute key based on the specified extended data scope and attribute key
@@ -218,7 +217,8 @@ export const isUserSubscribed = currentUser => currentUser?.attributes?.profile?
 const getCurrentUserTypeConfig = (config, currentUser) => {
   const { userTypes } = config.user;
   return userTypes.find(
-    ut => ut.userType === currentUser?.attributes?.profile?.publicData?.userType
+    // [SKYFARER] convert to lowercase to avoid case sensitivity (old IDs were mixed-case)
+    ut => ut.userType.toLowerCase() === currentUser?.attributes?.profile?.publicData?.userType.toLowerCase()
   );
 };
 
@@ -230,28 +230,18 @@ const getCurrentUserTypeConfig = (config, currentUser) => {
  * @returns {Boolean} true if the currentUser's user type, or the anonymous user configuration, is set to see the link
  */
 export const showCreateListingLinkForUser = (config, currentUser) => {
-  if (!currentUser) {
-    // Not logged in → fall back to config
-    return config?.topbar?.postListingsLink?.showToUnauthenticatedUsers || false;
-  }
-  
-  // const { topbar } = config;
+  const { topbar } = config;
   const currentUserTypeConfig = getCurrentUserTypeConfig(config, currentUser);
 
   const { accountLinksVisibility } = currentUserTypeConfig || {};
 
-  const canPostListings = hasPermissionToPostListings(currentUser);
-
-  return (accountLinksVisibility?.postListings ?? false) || canPostListings || isInstructor(currentUser);
-
-
-  // return currentUser && accountLinksVisibility
-  //   ? accountLinksVisibility.postListings
-  //   : currentUser
-  //   ? true
-  //   : topbar?.postListingsLink
-  //   ? topbar.postListingsLink.showToUnauthenticatedUsers
-  //   : true;
+  return currentUser && accountLinksVisibility
+    ? accountLinksVisibility.postListings
+    : currentUser
+    ? true
+    : topbar?.postListingsLink
+    ? topbar.postListingsLink.showToUnauthenticatedUsers
+    : true;
 };
 
 /**
