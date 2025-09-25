@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-
 import PriorityLinks, { CreateListingMenuLink } from './PriorityLinks';
 import LinksMenu from './LinksMenu';
 
 import css from './CustomLinksMenu.module.css';
 
 const draftId = '00000000-0000-0000-0000-000000000000';
-// Removed Add Listing from links array entirely, it will stay in topbar
 const createListingLinkConfigMaybe = (intl, showLink) =>
   showLink
     ? [
@@ -46,7 +44,7 @@ const groupMeasuredLinks = (links, containerWidth, menuMoreWidth) => {
     (pickedLinks, link, i) => {
       const isPrimary = link.group === 'primary';
       const isLast = i === links.length - 1;
-      // Has menuLinks at this point of the iteration (secondary links are at the end of the array)
+      // Has menuLinks at this point of the iteration (seconary links are at the end of the array)
       const hasMenuLinks = pickedLinks.menuLinks?.length > 0;
 
       const hasSpace =
@@ -116,6 +114,11 @@ const CustomLinksMenu = ({
   const containerRef = useRef(null);
   const observer = useRef(null);
   const [mounted, setMounted] = useState(false);
+  const [moreLabelWidth, setMoreLabelWidth] = useState(0);
+  const [links, setLinks] = useState([
+    ...createListingLinkConfigMaybe(intl, showCreateListingsLink),
+    ...customLinks,
+  ]);
   const [moreLabelWidth, setMoreLabelWidth] = useState(0);
   const [links, setLinks] = useState([
     ...createListingLinkConfigMaybe(intl, showCreateListingsLink),
@@ -192,11 +195,12 @@ const CustomLinksMenu = ({
   }, [containerRef, hasClientSideContentReady, moreLabelWidth, links]);
 
   const { priorityLinks, menuLinks, containerWidth } = layoutData;
-  
+
   // If there are no custom links, just render createListing link.
   if (customLinks?.length === 0 && showCreateListingsLink) {
     return <CreateListingMenuLink customLinksMenuClass={css.createListingLinkOnly} />;
   }
+
   const styleMaybe = mounted ? { style: { width: `${containerWidth}px` } } : {};
   const isMeasured = !!links?.[0]?.width;
   const hasMenuLinks = menuLinks?.length > 0;
@@ -205,6 +209,7 @@ const CustomLinksMenu = ({
   return (
     <div className={css.customLinksMenu} ref={containerRef} {...styleMaybe}>
       <PriorityLinks links={links} priorityLinks={priorityLinks} setLinks={setLinks} />
+      {mounted && hasMenuLinks ? (
       {mounted && hasMenuLinks ? (
         <LinksMenu
           id="linksMenu"

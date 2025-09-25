@@ -21,6 +21,7 @@ const UserNav = props => {
   const classes = classNames(rootClassName || css.root, className);
 
   const manageListingsTabMaybe = showManageListingsLink
+  const manageListingsTabMaybe = showManageListingsLink
     ? [
         {
           text: <FormattedMessage id="UserNav.yourListings" />,
@@ -50,7 +51,7 @@ const UserNav = props => {
         name: 'ContactDetailsPage',
       },
     },
-    {// [SKYFARER]
+    {// [SKYFARER] // [SKYFARER]
       text: <FormattedMessage id="UserNav.favoriteListing" />,
       selected: currentPage === 'FavoriteListingPage',
       linkProps: {

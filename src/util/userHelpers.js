@@ -218,7 +218,8 @@ const getCurrentUserTypeConfig = (config, currentUser) => {
   const { userTypes } = config.user;
   return userTypes.find(
     // [SKYFARER] convert to lowercase to avoid case sensitivity (old IDs were mixed-case)
-    ut => ut.userType.toLowerCase() === currentUser?.attributes?.profile?.publicData?.userType.toLowerCase()  
+    // [SKYFARER] convert to lowercase to avoid case sensitivity (old IDs were mixed-case)
+    ut => ut.userType.toLowerCase().toLowerCase() === currentUser?.attributes?.profile?.publicData?.userType.toLowerCase().toLowerCase()  
   );
 };
 
@@ -236,6 +237,13 @@ export const showCreateListingLinkForUser = (config, currentUser) => {
 
   const { accountLinksVisibility } = currentUserTypeConfig || {};
 
+  return currentUser && accountLinksVisibility
+    ? accountLinksVisibility.postListings
+    : currentUser
+    ? true
+    : topbar?.postListingsLink
+    ? topbar.postListingsLink.showToUnauthenticatedUsers
+    : true;
   return currentUser && accountLinksVisibility
     ? accountLinksVisibility.postListings
     : currentUser

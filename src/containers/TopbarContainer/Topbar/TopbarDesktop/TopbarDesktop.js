@@ -3,7 +3,6 @@ import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
-
 import {
   Avatar,
   InlineTextButton,
@@ -13,7 +12,6 @@ import {
   MenuContent,
   MenuItem,
   NamedLink,
-  PrimaryButtonInline, // [SKYFARER]
 } from '../../../../components';
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
@@ -23,6 +21,7 @@ import css from './TopbarDesktop.module.css';
 
 const SignupLink = () => {
   return (
+    <NamedLink name="SignupPage" className={css.topbarLink}>
     <NamedLink name="SignupPage" className={css.topbarLink}>
       <span className={css.topbarLinkLabel}>
         <FormattedMessage id="TopbarDesktop.signup" />
@@ -67,6 +66,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
         {showManageListingsLink ? (
+        {showManageListingsLink ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -78,7 +78,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </MenuItem>
         ) : null}
         <MenuItem key="ProfileSettingsPage">
-          <NamedLink // [SKYFARER]
+          <NamedLink // [SKYFARER] // [SKYFARER]
             className={classNames(css.menuLink, currentPageClass('FavoriteListingPage'))}
             name="FavoriteListingPage"
           >
@@ -209,11 +209,11 @@ const TopbarDesktop = props => {
 
       <CustomLinksMenu
         currentPage={currentPage}
-        currentUser={currentUser}
         customLinks={customLinks}
         intl={intl}
         hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
         showCreateListingsLink={showCreateListingsLink}
+      />
       />
 
       {inboxLinkMaybe}
