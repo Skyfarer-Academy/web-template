@@ -119,11 +119,6 @@ const CustomLinksMenu = ({
     ...createListingLinkConfigMaybe(intl, showCreateListingsLink),
     ...customLinks,
   ]);
-  const [moreLabelWidth, setMoreLabelWidth] = useState(0);
-  const [links, setLinks] = useState([
-    ...createListingLinkConfigMaybe(intl, showCreateListingsLink),
-    ...customLinks,
-  ]);
 
   const [layoutData, setLayoutData] = useState({
     priorityLinks: links,
@@ -209,7 +204,6 @@ const CustomLinksMenu = ({
   return (
     <div className={css.customLinksMenu} ref={containerRef} {...styleMaybe}>
       <PriorityLinks links={links} priorityLinks={priorityLinks} setLinks={setLinks} />
-      {mounted && hasMenuLinks ? (
       {mounted && hasMenuLinks ? (
         <LinksMenu
           id="linksMenu"
