@@ -50,7 +50,7 @@ const UserNav = props => {
         name: 'ContactDetailsPage',
       },
     },
-    { // [SKYFARER]
+    {// [SKYFARER] // [SKYFARER]
       text: <FormattedMessage id="UserNav.favoriteListing" />,
       selected: currentPage === 'FavoriteListingPage',
       linkProps: {

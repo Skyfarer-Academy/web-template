@@ -17,11 +17,10 @@ const createListingLinkConfigMaybe = (intl, showLink) =>
             name: 'EditListingPage',
             params: { slug: 'draft', id: draftId, type: 'new', tab: 'details' },
           },
-          highlight: true,
+          highlight: false,
         },
       ]
     : [];
-
 /**
  * Group links to 2 groups:
  * - priorityLinks (Those primary links that fit into current width of the TopbarDesktop.)

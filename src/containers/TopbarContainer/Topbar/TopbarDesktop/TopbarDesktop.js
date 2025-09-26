@@ -76,7 +76,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </MenuItem>
         ) : null}
         <MenuItem key="ProfileSettingsPage">
-          <NamedLink // [SKYFARER]
+          <NamedLink // [SKYFARER] // [SKYFARER]
             className={classNames(css.menuLink, currentPageClass('FavoriteListingPage'))}
             name="FavoriteListingPage"
           >
