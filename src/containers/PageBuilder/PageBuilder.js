@@ -1,5 +1,6 @@
-import React from 'react';
-
+import React, {useEffect, useState} from 'react';
+import { useSelector } from 'react-redux';
+import { currentUserSelector } from '../../ducks/user.duck.js';
 import { IconSpinner, LayoutComposer } from '../../components/index.js';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
@@ -48,6 +49,50 @@ const getMetadata = (meta, schemaType, fieldOptions) => {
     schema: pageSchemaForSEO,
     socialSharing: openGraph,
   };
+};
+
+// Add a bar at the top to display the typeform link
+const AnnouncementBar = () => {
+  const [tfReady, setTfReady] = useState(false);
+
+  useEffect(() => {
+    if (!window.tf) {
+      const script = document.createElement("script");
+      script.src = "https://embed.typeform.com/next/embed.js";
+      script.async = true;
+      script.onload = () => setTfReady(true);
+      document.body.appendChild(script);
+    } else {
+      setTfReady(true);
+    }
+  }, []);
+
+  const handleClick = e => {
+    e.preventDefault();
+    if (tfReady && window.tf?.createPopup) {
+      const { toggle } = window.tf.createPopup("TYDmCHOb", {
+        mode: "popup",
+        autoClose: 0,
+        hideHeaders: true,
+        hideFooters: true,
+      });
+      toggle();
+    } else {
+      console.warn("Typeform script not ready yet");
+    }
+  };
+
+  return (
+    <div className={css.announcementBar}>
+      Concierge: 
+      <span className={css.announcementBar1}>
+        Need help finding?{" "}
+      <a href="#" onClick={handleClick} className={css.announcementLink}>
+        Submit your request or ask a question
+      </a>
+      </span>
+    </div>
+  );
 };
 
 const LoadingSpinner = () => {
@@ -108,6 +153,7 @@ const PageBuilder = props => {
     schemaType,
     options,
     currentPage,
+    currentUser,
     ...pageProps
   } = props;
 
@@ -126,14 +172,22 @@ const PageBuilder = props => {
     main
     footer
   `;
+  console.log("DEBUG PageBuilder", {
+    currentUser: props.currentUser,
+    pagePropsUser: pageProps.currentUser,
+    currentPage,
+  });
   return (
     <StaticPage {...pageMetaProps} {...pageProps}>
       <LayoutComposer areas={layoutAreas} className={css.layout}>
         {props => {
           const { Topbar, Main, Footer } = props;
+          const isLoggedout = !currentUser;
+          const isHomepage = currentPage === "LandingPage";
           return (
             <>
               <Topbar as="header" className={css.topbar}>
+                {isLoggedout && isHomepage ? <AnnouncementBar /> : null}
                 <TopbarContainer currentPage={currentPage} />
               </Topbar>
               <Main as="main" className={css.main}>
