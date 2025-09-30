@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { useSelector } from 'react-redux';
 import { currentUserSelector } from '../../ducks/user.duck.js';
+import { useLocation } from 'react-router-dom/cjs/react-router-dom.js';
+
 import { IconSpinner, LayoutComposer } from '../../components/index.js';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
@@ -153,9 +155,11 @@ const PageBuilder = props => {
     schemaType,
     options,
     currentPage,
-    currentUser,
     ...pageProps
   } = props;
+
+  const currentUser = useSelector(currentUserSelector);
+  const lcoation = useLocation();
 
   if (!pageAssetsData && fallbackPage && !inProgress && error) {
     return fallbackPage;
@@ -172,22 +176,26 @@ const PageBuilder = props => {
     main
     footer
   `;
-  console.log("DEBUG PageBuilder", {
-    currentUser: props.currentUser,
-    pagePropsUser: pageProps.currentUser,
-    currentPage,
+
+  const isLoggedOut = !currentUser;
+  const isHomePage = location.pathname === '/';
+
+  console.log('DEBUG PageBuilder', {
+    currentUser,
+    pathname: location.pathname,
+    isLoggedOut,
+    isHomePage,
   });
+
   return (
     <StaticPage {...pageMetaProps} {...pageProps}>
       <LayoutComposer areas={layoutAreas} className={css.layout}>
         {props => {
           const { Topbar, Main, Footer } = props;
-          const isLoggedout = !currentUser;
-          const isHomepage = currentPage === "LandingPage";
           return (
             <>
               <Topbar as="header" className={css.topbar}>
-                {isLoggedout && isHomepage ? <AnnouncementBar /> : null}
+                {isLoggedOut && isHomePage ? <AnnouncementBar /> : null}
                 <TopbarContainer currentPage={currentPage} />
               </Topbar>
               <Main as="main" className={css.main}>
