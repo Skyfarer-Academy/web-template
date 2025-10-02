@@ -53,49 +53,73 @@ const getMetadata = (meta, schemaType, fieldOptions) => {
   };
 };
 
-// Add a bar at the top to display the typeform link
+// Add a bar at the top to display the Google form link
 const AnnouncementBar = () => {
-  const [tfReady, setTfReady] = useState(false);
-
-  useEffect(() => {
-    if (!window.tf) {
-      const script = document.createElement("script");
-      script.src = "https://embed.typeform.com/next/embed.js";
-      script.async = true;
-      script.onload = () => setTfReady(true);
-      document.body.appendChild(script);
-    } else {
-      setTfReady(true);
-    }
-  }, []);
-
-  const handleClick = e => {
-    e.preventDefault();
-    if (tfReady && window.tf?.createPopup) {
-      const { toggle } = window.tf.createPopup("TYDmCHOb", {
-        mode: "popup",
-        autoClose: 0,
-        hideHeaders: true,
-        hideFooters: true,
-      });
-      toggle();
-    } else {
-      console.warn("Typeform script not ready yet");
-    }
-  };
+  const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className={css.announcementBar}>
-      Concierge: 
-      <span className={css.announcementBar1}>
-        Need help finding?{" "}
-      <a href="#" onClick={handleClick} className={css.announcementLink}>
-        Submit your request or ask a question
-      </a>
-      </span>
-    </div>
+    <>
+      <div className={css.announcementBar}>
+        Concierge:{" "}
+        <span className={css.announcementBar1}>
+          Need help finding?{" "}
+          <span
+            className={css.announcementLink}
+            onClick={() => setShowModal(true)}
+          >
+            Submit your request or ask a question
+          </span>
+        </span>
+      </div>
+
+      {showModal && (
+        <div className={css.modalOverlay} onClick={() => setShowModal(false)}>
+          <div
+            className={css.modalContent}
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+          >
+            <button
+              className={css.closeBtn}
+              onClick={() => setShowModal(false)}
+            >
+              &times;
+            </button>
+            <iframe
+              src="https://forms.monday.com/forms/embed/e84e8aefa14ef0f5d78bccf3a4ab3c75?r=use1"
+              title="Monday Form"
+            ></iframe>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
+
+// const AnnouncementBar = () => {
+//   const handleClick = e => {
+//     e.preventDefault();
+
+//     // Open a new small popup window
+//     window.open(
+//       "https://forms.monday.com/forms/e84e8aefa14ef0f5d78bccf3a4ab3c75?r=use1", // replace with your Monday form link
+//       "mondayFormPopup",
+//       "width=600,height=700,resizable=yes,scrollbars=yes"
+//     );
+//   };
+
+//   return (
+//     <div className={css.announcementBar}>
+//       Concierge: 
+//       <span className={css.announcementBar1}>
+//         Need help finding?{" "}
+//         <a href="#" onClick={handleClick} className={css.announcementLink}>
+//           Submit your request or ask a question
+//         </a>
+//       </span>
+//     </div>
+//   );
+// };
+
 
 const LoadingSpinner = () => {
   return (
