@@ -95,32 +95,6 @@ const AnnouncementBar = () => {
   );
 };
 
-// const AnnouncementBar = () => {
-//   const handleClick = e => {
-//     e.preventDefault();
-
-//     // Open a new small popup window
-//     window.open(
-//       "https://forms.monday.com/forms/e84e8aefa14ef0f5d78bccf3a4ab3c75?r=use1", // replace with your Monday form link
-//       "mondayFormPopup",
-//       "width=600,height=700,resizable=yes,scrollbars=yes"
-//     );
-//   };
-
-//   return (
-//     <div className={css.announcementBar}>
-//       Concierge: 
-//       <span className={css.announcementBar1}>
-//         Need help finding?{" "}
-//         <a href="#" onClick={handleClick} className={css.announcementLink}>
-//           Submit your request or ask a question
-//         </a>
-//       </span>
-//     </div>
-//   );
-// };
-
-
 const LoadingSpinner = () => {
   return (
     <div className={css.loading}>
