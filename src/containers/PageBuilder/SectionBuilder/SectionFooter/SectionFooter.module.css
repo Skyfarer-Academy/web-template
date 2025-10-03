@@ -209,11 +209,11 @@
 }
 
 .extraNote {
-  margin: 2rem auto 0 auto; /* top margin + horizontal centering */
-  text-align: center; /* centers the text inside */
+  margin: 2rem auto 0 auto; 
+  text-align: center;
   font-size: 14px;
   color: #555;
-  max-width: 1200px; /* prevents overflow */
+  max-width: 1200px; 
   width: 100%;
 }
 .extraNoteLink {
