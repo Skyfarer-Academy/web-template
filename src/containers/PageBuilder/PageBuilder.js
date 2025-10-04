@@ -157,7 +157,7 @@ const PageBuilder = props => {
   } = props;
 
   const currentUser = useSelector(currentUserSelector);
-  const lcoation = useLocation();
+  const location = useLocation();
 
   if (!pageAssetsData && fallbackPage && !inProgress && error) {
     return fallbackPage;
