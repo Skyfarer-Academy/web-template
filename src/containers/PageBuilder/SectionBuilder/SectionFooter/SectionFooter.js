@@ -152,6 +152,22 @@ const SectionFooter = props => {
           </div>
         </div>
       </div>
+      {/* 👉 Custom text moved here BELOW footer content */}
+      <div className={css.extraNote}>
+      <p>
+        As a platform, we connect students and pilots of all stages with flight instructors and flight schools for both live online and in-person instruction. 
+        We are not a certified flight school under Part 141 or Part 61 regulations. If you have any questions or concerns, just{' '}
+        <a
+          href="https://forms.monday.com/forms/ed66dd220397ba244f5f8263ea14576e?r=use1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={css.extraNoteLink} 
+        >
+          message and ask!
+        </a>
+      </p>
+    </div>
+
     </SectionContainer>
   );
 };
