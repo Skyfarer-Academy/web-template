@@ -303,6 +303,7 @@ const OrderPanel = props => {
     onToggleFavorites,
     payoutDetailsWarning,
     reschedule, // [SKYFARER]
+    showListingImage,
   } = props;
 
   const config = useConfiguration(); // [SKYFARER]
@@ -435,7 +436,7 @@ const OrderPanel = props => {
       } catch {}
     }
   }, [currentUser])
-  
+
   return (
     <div className={classes}>
       <ModalInMobile
@@ -451,10 +452,12 @@ const OrderPanel = props => {
           <H1 className={css.heading}>{title}</H1>
         </div>
 
-        <div className={css.orderHeading}>
-          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
-          {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
-        </div>
+        {showListingImage && (
+          <div className={css.orderHeading}>
+            {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+            {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
+          </div>
+        )}
 
         <PriceMaybe
           price={price}
@@ -508,6 +511,7 @@ const OrderPanel = props => {
             timeZone={timeZone}
             onContactUser={onContactUser} // [SKYFARER]
             authorDisplayName={authorDisplayName} // [SKYFARER]
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             {...priceVariantsMaybe}
             {...sharedProps}
           />
@@ -515,6 +519,7 @@ const OrderPanel = props => {
           <BookingTimeForm
             seatsEnabled={seatsEnabled}
             className={css.bookingForm}
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             formId="OrderPanelBookingTimeForm"
             lineItemUnitType={lineItemUnitType}
             onSubmit={onSubmit}
@@ -571,10 +576,11 @@ const OrderPanel = props => {
             config={config} // [SKYFARER]
             currentUser={currentUser} // [SKYFARER]
             currentUserHasOrders={currentUserHasOrders} // [SKYFARER]
+            categoryLevel1={listing?.attributes?.publicData?.categoryLevel1}
             {...sharedProps}
           />
         ) : showInquiryForm ? (
-          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
+          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} categoryLevel1={listing?.attributes?.publicData?.categoryLevel1} />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
             <FormattedMessage id="OrderPanel.unknownTransactionProcess" />

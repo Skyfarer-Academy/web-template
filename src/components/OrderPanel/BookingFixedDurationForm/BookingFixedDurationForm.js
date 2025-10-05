@@ -12,9 +12,11 @@ import { Form, H6, PrimaryButton, FieldSelect } from '../../../components';
 import EstimatedCustomerBreakdownMaybe from '../EstimatedCustomerBreakdownMaybe';
 import FieldDateAndTimeInput from './FieldDateAndTimeInput';
 
+import FetchLineItemsError from '../FetchLineItemsError/FetchLineItemsError.js';
+
 import css from './BookingFixedDurationForm.module.css';
 import ConsultationBox from '../../ConsultationBox/ConsultationBox'; // [SKYFARER]
-
+import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner.js';
 // When the values of the form are updated we need to fetch
 // lineItems from this template's backend for the EstimatedTransactionMaybe
 // In case you add more fields to the form, make sure you add
@@ -148,7 +150,11 @@ export const BookingFixedDurationForm = props => {
           onContactUser, // [SKYFARER]
           authorDisplayName, // [SKYFARER],
           voucher, // [SKYFARER]
+          categoryLevel1,
         } = formRenderProps;
+
+        // console.log("Bookin fixed duration form for listingId:", listingId);
+        // console.log("Listing categoryLevel1:", categoryLevel1);
 
         const startTime = values?.bookingStartTime ? values.bookingStartTime : null;
         const endTime = values?.bookingEndTime ? values.bookingEndTime : null;
@@ -255,11 +261,7 @@ export const BookingFixedDurationForm = props => {
               </div>
             ) : null}
 
-            {fetchLineItemsError ? (
-              <span className={css.sideBarError}>
-                <FormattedMessage id="BookingFixedDurationForm.fetchLineItemsError" />
-              </span>
-            ) : null}
+            <FetchLineItemsError error={fetchLineItemsError} />
 
             <div className={css.submitButton}>
               <PrimaryButton
@@ -289,6 +291,7 @@ export const BookingFixedDurationForm = props => {
                 <ConsultationBox onContactUser={onContactUser} authorDisplayName={authorDisplayName} />
               </div>) : null
             }
+            <AvemcoBanner categoryLevel1={categoryLevel1}/>
           </Form>
         );
       }}

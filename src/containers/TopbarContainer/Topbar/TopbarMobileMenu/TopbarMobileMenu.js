@@ -8,7 +8,6 @@ import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ensureCurrentUser } from '../../../../util/data';
-import { isInstructor } from '../../../../util/skyfarer';
 
 import {
   AvatarLarge,
@@ -16,18 +15,12 @@ import {
   InlineTextButton,
   NamedLink,
   NotificationBadge,
-  PrimaryButtonInline, // [SKYFARER]
 } from '../../../../components';
 
 import css from './TopbarMobileMenu.module.css';
 
-import SparklyBackground from '../../../../assets/sparkly-background.jpg'; // [SKYFARER]
-
-const isLowerEnv = process.env.REACT_APP_IS_LOWER_ENV === 'true'; // [SKYFARER]
-
-const CustomLinkComponent = ({ linkConfig, currentPage, currentUser }) => { // [SKYFARER MERGE: +currentUser]
+const CustomLinkComponent = ({ linkConfig, currentPage }) => {
   const { group, text, type, href, route } = linkConfig;
-
   const getCurrentPageClass = page => {
     const hasPageName = name => currentPage?.indexOf(name) === 0;
     const isCMSPage = pageId => hasPageName('CMSPage') && currentPage === `${page}:${pageId}`;
@@ -98,13 +91,11 @@ const TopbarMobileMenu = props => {
     );
   });
 
-  const createListingsLinkMaybe =
-  currentUser && isInstructor(currentUser) ? (
+  const createListingsLinkMaybe = showCreateListingsLink ? (
     <NamedLink className={css.createNewListingLink} name="NewListingPage">
       <FormattedMessage id="TopbarMobileMenu.newListingLink" />
     </NamedLink>
   ) : null;
-
 
   if (!isAuthenticated) {
     const signup = (
@@ -125,7 +116,7 @@ const TopbarMobileMenu = props => {
       </span>
     );
     return (
-      <div className={css.root}>
+      <nav className={css.root}>
         <div className={css.content}>
           <div className={css.authenticationGreeting}>
             <FormattedMessage
@@ -139,7 +130,7 @@ const TopbarMobileMenu = props => {
           <div className={css.spacer} />
         </div>
         <div className={css.footer}>{createListingsLinkMaybe}</div>
-      </div>
+      </nav>
     );
   }
 
@@ -164,18 +155,6 @@ const TopbarMobileMenu = props => {
       <FormattedMessage id="TopbarMobileMenu.yourListingsLink" />
     </NamedLink>
   ) : null;
-
-  const InstructorMatchingButtonLink = () => { // [SKYFARER]
-    return (
-      <div className={css.topbarButtonWrapper}>
-        <NamedLink name='AIMatchingPage'>
-          <PrimaryButtonInline style={{backgroundImage: `url(${SparklyBackground})`, backgroundPosition: '50% 35%'}}>
-            <FormattedMessage style={{all: "unset"}} id='TopbarDesktop.ai'/>
-          </PrimaryButtonInline>
-        </NamedLink>
-      </div>
-    );
-  };
 
   return (
     <div className={css.root}>
@@ -204,7 +183,7 @@ const TopbarMobileMenu = props => {
           >
             <FormattedMessage id="TopbarMobileMenu.profileSettingsLink" />
           </NamedLink>
-          <NamedLink
+          <NamedLink // [SKYFARER]
             className={classNames(css.navigationLink, currentPageClass('FavoriteListingPage'))}
             name="FavoriteListingPage"
           >
@@ -216,9 +195,6 @@ const TopbarMobileMenu = props => {
           >
             <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
           </NamedLink>
-          {
-            // isAuthenticated && isLowerEnv && <InstructorMatchingButtonLink/>
-          }
         </div>
         <div className={css.customLinksWrapper}>{extraLinks}</div>
         <div className={css.spacer} />

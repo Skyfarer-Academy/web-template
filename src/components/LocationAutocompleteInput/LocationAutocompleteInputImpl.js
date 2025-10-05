@@ -7,7 +7,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import { IconSpinner } from '../../components';
 
-import IconHourGlass from './IconHourGlass';
+import IconLookingGlass from './IconLookingGlass';
 import IconCurrentLocation from './IconCurrentLocation';
 import * as geocoderMapbox from './GeocoderMapbox';
 import * as geocoderGoogleMaps from './GeocoderGoogleMaps';
@@ -306,10 +306,20 @@ class LocationAutocompleteInputImplementation extends Component {
     this.getGeocoder()
       .getPlaceDetails(prediction, currentLocationBoundsDistance)
       .then(place => {
+        // console.log("DEBUG selected place details:", place, "raw prediction:", prediction);  
         if (!this._isMounted) {
           // Ignore if component already unmounted
           return;
         }
+
+        // // 🔎 Debug log for type and bbox
+        // console.log("Selected place debug:", {
+        //   name: place.address,
+        //   type: place.place_type,
+        //   bbox: place.bbox,
+        //   center: place.center,
+        // });
+
         this.setState({ fetchingPlaceDetails: false });
         this.props.input.onChange({
           search: place.address,
@@ -498,7 +508,7 @@ class LocationAutocompleteInputImplementation extends Component {
           ) : CustomIcon ? (
             <CustomIcon />
           ) : (
-            <IconHourGlass />
+            <IconLookingGlass />
           )}
         </div>
         <input

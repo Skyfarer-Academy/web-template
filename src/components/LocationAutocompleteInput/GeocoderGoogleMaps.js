@@ -7,6 +7,18 @@ import css from './LocationAutocompleteInput.module.css';
 
 export const CURRENT_LOCATION_ID = 'current-location';
 
+//Updating radius size based on the location type
+// function getRadiusForType(type) {
+//   switch (type) {
+//     case 'locality':
+//       return 400000;
+//     case 'political': // state / province
+//       return 200000; 
+//     default:
+//       return 500000;
+//   }
+// }
+
 // When displaying data from the Google Maps Places API, and
 // attribution is required next to the results.
 // See: https://developers.google.com/places/web-service/policies#powered
@@ -73,7 +85,7 @@ class GeocoderGoogleMaps {
     return prediction.placePrediction.placeId;
   }
 
-  /**
+  /**  
    * Get the address text of the given prediction.
    */
   getPredictionAddress(prediction) {
@@ -100,21 +112,46 @@ class GeocoderGoogleMaps {
           address: '',
           origin: latlng,
           bounds: googleMapsUtil.locationBounds(latlng, currentLocationBoundsDistance),
+          // type: 'current-location',
+          // radius: getRadiusForType('current-location')
         };
       });
     }
 
     if (prediction.predictionPlace) {
       return Promise.resolve(prediction.predictionPlace);
+      // return Promise.resolve({...prediction.predictionPlace, type: prediction.predictionPlace.types ? prediction.predictionPlace.types[0] : undefined,});
     }
 
     return googleMapsUtil.getPlaceDetails(
-        this.getPredictionId(prediction), 
-        currentLocationBoundsDistance)
-      .then(place => {
-        this.sessionToken = null;
-        return place;
-    });
+        this.getPredictionId(prediction))
+        .then(place => {
+          this.sessionToken = null;
+
+        // // Extract a simple 'type' from Google response
+        // const placeType =
+        // prediction.placePrediction?.types?.[0] ||
+        // place.types?.[0] ||
+        // undefined;
+        
+        // const radius = getRadiusForType(placeType);
+
+        // // 🔥 Add console here
+        // console.log('Place details with dynamic radius:', { address: place.address, type, radius });
+
+        // return {
+        // place,
+        // // type: placeType,
+        // // radius,
+        // };
+        return{
+          address: place.address,
+          origin: place.origin,
+          bounds: place.bounds,
+          radius: place.radius, // <- make sure this is accessible
+          types: place.types
+        };    
+      });
   }
 }
 

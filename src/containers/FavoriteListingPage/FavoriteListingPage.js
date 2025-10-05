@@ -89,7 +89,7 @@ export const FavoriteListingPageComponent = props => {
         topbar={
           <>
             <TopbarContainer currentPage="FavoriteListingPage" />
-            <UserNav currentUser={currentUser} currentPage="FavoriteListingPage" />
+            <UserNav currentPage="FavoriteListingPage" />
           </>
         }
         footer={<FooterContainer />}

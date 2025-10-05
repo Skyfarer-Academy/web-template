@@ -154,8 +154,11 @@
     </style>
 
     <!--!script-->
-
+    <script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script>
+    <script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.8.0-min.js.gz"></script>
+    <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('161d8ec4629293e83cd2f2b55cc5f2eb', {"autocapture":{"elementInteractions":true}});</script>
     <link rel="stylesheet" href="%PUBLIC_URL%/static/reactDates.css" /><!-- [SKYFARER] -->
+    <link rel="stylesheet" href="https://embed.typeform.com/next/css/popup.css" />
   </head>
   <body>
     <div id="root"><!--!body--></div>
@@ -188,5 +191,6 @@
 
          Check: /server/csp.js
     -->
+   <script src="https://embed.typeform.com/next/embed.js"></script>
   </body>
 </html>

@@ -1,6 +1,7 @@
 /* global google */
 
-import { types as sdkTypes } from '../util/sdkLoader';
+import { types as sdkTypes, types } from '../util/sdkLoader';
+
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -30,23 +31,23 @@ const placeOrigin = place => {
  *                                 with 100km radius around the place's location.
  *                                 Returns null if the place or its location is invalid.
  */
-const placeBounds = (place, currentLocationBoundsDistance) => {
-  // if (place && place.viewport) {
-  //   const ne = place.viewport.getNorthEast();
-  //   const sw = place.viewport.getSouthWest();
-  //   return new SDKLatLngBounds(
-  //     new SDKLatLng(ne.lat(), ne.lng()),
-  //     new SDKLatLng(sw.lat(), sw.lng())
-  //   );
-  // }
-  // return null;
-  // [SKYFARER]
-  if (!place || !place.location) {
-    return null;
+const placeBounds = (place) => {
+  if (place && place.viewport) {
+    const ne = place.viewport.getNorthEast();
+    const sw = place.viewport.getSouthWest();
+    return new SDKLatLngBounds(
+      new SDKLatLng(ne.lat(), ne.lng()),
+      new SDKLatLng(sw.lat(), sw.lng())
+    );
   }
+  return null;
+  // [SKYFARER]
+  /*if (!place || !place.location) {
+     return null;
+   }
   
-  const distance_meteres = currentLocationBoundsDistance;
-  return locationBounds({ lat: place.location.lat(), lng: place.location.lng() }, distance_meteres);
+   const distance_meteres = currentLocationBoundsDistance;
+   return locationBounds({ lat: place.location.lat(), lng: place.location.lng() }, distance_meteres);*/
 };
 
 /**
@@ -59,19 +60,59 @@ const placeBounds = (place, currentLocationBoundsDistance) => {
  *   - `origin` (object): The geographic origin of the place (calculated using `placeOrigin`).
  *   - `bounds` (object): The viewport bounds of the place (calculated using `placeBounds`).
  */
-export const getPlaceDetails = async (placeId, currentLocationBoundsDistance) => {
+export const getPlaceDetails = async (placeId) => {
   try {
     const place = await new window.google.maps.places.Place({ id: placeId });
-    const fields = ['addressComponents', 'formattedAddress', 'viewport', 'id', 'location'];
+    const fields = ['addressComponents', 'formattedAddress', 'viewport', 'id', 'location', 'types'];
 
     await place.fetchFields({ fields: fields });
 
+    const origin = placeOrigin(place);
+    let bounds;
+    let radius;
+
+    if (place.types && origin && (place.types.includes('locality') && place.types.includes('political'))) 
+    {
+      // Locality or political entity – 25 km radius
+      radius = 18500;
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius);
+    }
+    else if(place.types.includes('airport') || place.types.includes('street_address'))
+    {
+      radius = 5000;
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius)
+    }
+    else if(place.types.includes('administrative_area_level_1') && place.types.includes('political'))
+    {
+      radius = 300000;
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius)
+    }
+    else 
+    {
+      // Fallback – use Google's viewport bounds
+      // bounds = placeBounds(place);
+      radius = 20000; // e.g. 20 km (adjust as you like)
+      bounds = locationBounds({ lat: origin.lat, lng: origin.lng }, radius);
+    }
+
+    console.log('Fetched place details:', {
+      address: place.formattedAddress,
+      origin,
+      bounds,
+      radius,
+      types: place.types,
+    });
+    
     return {
       address: place.formattedAddress,
-      origin: placeOrigin(place),
-      bounds: placeBounds(place, currentLocationBoundsDistance),
+      origin,
+      bounds,
+      radius,
+      types: place.types,
     };
-  } catch (error) {
+  } 
+  catch (error) 
+    {
     if (isDev) {
       console.error(`Could not get details for place id "${placeId}": `, error);
     }
