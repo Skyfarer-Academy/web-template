@@ -53,9 +53,22 @@ const getMetadata = (meta, schemaType, fieldOptions) => {
   };
 };
 
-// Add a bar at the top to display the Google form link
+// Add a bar at the top to display the Monday form link
 const AnnouncementBar = () => {
   const [showModal, setShowModal] = useState(false);
+  const [ formType, setFormType] = useState(null);
+
+  // Form URLs
+
+  const mondayformlinks = {
+    request: "https://forms.monday.com/forms/embed/e84e8aefa14ef0f5d78bccf3a4ab3c75?r=use1",
+    question: "https://forms.monday.com/forms/ed66dd220397ba244f5f8263ea14576e?r=use1",
+  };
+
+  const openForm = (type) => {
+    setFormType(type);
+    setShowModal(true);
+  };
 
   return (
     <>
@@ -65,9 +78,16 @@ const AnnouncementBar = () => {
           Need help finding?{" "}
           <span
             className={css.announcementLink}
-            onClick={() => setShowModal(true)}
+            onClick={() => openForm("request")}
           >
-            Submit your request or ask a question
+            Submit your request
+          </span>{" "}
+          or{" "}
+          <span
+            className={css.announcementLink}
+            onClick={() => openForm("question")}
+          >
+            ask a question
           </span>
         </span>
       </div>
@@ -85,9 +105,12 @@ const AnnouncementBar = () => {
               &times;
             </button>
             <iframe
-              src="https://forms.monday.com/forms/embed/e84e8aefa14ef0f5d78bccf3a4ab3c75?r=use1"
-              title="Monday Form"
-            ></iframe>
+              src={mondayformlinks[formType]}
+              title={
+                formType === "request" ? "Submit Your Request" : "Ask a Question"
+              }
+            >
+            </iframe>
           </div>
         </div>
       )}
