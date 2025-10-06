@@ -1,4 +1,5 @@
 import * as log from '../util/log';
+import posthog from 'posthog-js';
 import { storableError } from '../util/errors';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
 import { createUserWithIdp } from '../util/api';
@@ -220,6 +221,12 @@ export const logout = () => (dispatch, getState, sdk) => {
       dispatch(logoutSuccess());
       dispatch(clearCurrentUser());
       log.clearUserId();
+      // Reset PostHog identity on logout
+      try {
+        posthog.reset();
+      } catch (e) {
+        // ignore
+      }
       dispatch(userLogout());
     })
     .catch(e => dispatch(logoutError(storableError(e))));

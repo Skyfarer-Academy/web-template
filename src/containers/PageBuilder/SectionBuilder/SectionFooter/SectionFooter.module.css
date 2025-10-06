@@ -207,3 +207,21 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.extraNote {
+  margin: 2rem auto 0 auto; 
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  max-width: 1200px; 
+  width: 100%;
+}
+.extraNoteLink {
+  color: #1B385B;
+  cursor: pointer;
+}
+
+.extraNoteLink:hover {
+  color: #1B385B; 
+}
+

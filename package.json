@@ -48,6 +48,7 @@
     "passport-google-oauth": "^2.0.0",
     "patch-package": "^8.0.0",
     "path-to-regexp": "^8.2.0",
+    "posthog-js": "^1.270.1",
     "postinstall-postinstall": "^2.1.0",
     "prop-types": "^15.8.1",
     "query-string": "^7.1.3",

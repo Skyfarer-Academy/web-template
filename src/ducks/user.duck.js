@@ -1,4 +1,5 @@
 import { util as sdkUtil } from '../util/sdkLoader';
+import posthog from 'posthog-js';
 import { denormalisedResponseEntities, ensureOwnListing } from '../util/data';
 import * as log from '../util/log';
 import { LISTING_STATE_DRAFT } from '../util/types';
@@ -395,6 +396,26 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
       // set current user id to the logger
       log.setUserId(currentUser.id.uuid);
       dispatch(currentUserShowSuccess(currentUser));
+      // Identify user in PostHog for analytics
+      const userId = currentUser?.id?.uuid;
+      const email = currentUser?.attributes?.email;
+      const profile = currentUser?.attributes?.profile || {};
+      const firstName = profile.firstName;
+      const lastName = profile.lastName;
+      const displayName = profile.displayName || [firstName, lastName].filter(Boolean).join(' ');
+      if (userId) {
+        posthog.identify(userId, {
+          email,
+          firstName,
+          lastName,
+          displayName,
+        });
+        // Group user by user_type (e.g., pilot, instructor, school)
+        const userType = profile?.publicData?.userType || currentUser?.attributes?.profile?.publicData?.userType;
+        if (userType) {
+          posthog.group('user_type', String(userType).toLowerCase());
+        }
+      }
       return currentUser;
     })
     .then(currentUser => {

@@ -300,6 +300,7 @@ export const ListingCard = props => {
       params={{ id, slug }}
       target={typeof window !== 'undefined' ? window.location.hostname === 'localhost' ? undefined : '_blank' : '_blank'} // [SKYFARER]
     >
+    <div className={css.imageWrapper}>
       <ListingCardImage
         renderSizes={renderSizes}
         title={title}
@@ -312,6 +313,17 @@ export const ListingCard = props => {
         style={cardStyle}
         showListingImage={showListingImage}
       />
+      {showHeartIcon && (
+        <button
+        className={css.favoriteButton}
+        onClick={toggleFavorites}
+        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          <HeartIcon filled={isFavorite} />
+        </button>
+      )}
+    </div>
+    
       <div className={css.info}>
         <PriceMaybe
           price={price}
