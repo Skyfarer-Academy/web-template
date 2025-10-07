@@ -1,13 +1,7 @@
 import React from 'react';
 import { any, string } from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
-import posthog from 'posthog-js'
-
-posthog.init('phc_lf1TbLlgF1qbWd9s62FFtbbx9zY3MpDHDQshMC1hFIF', {
-  api_host: 'https://us.i.posthog.com',
-  defaults: '2025-05-24',
-  person_profiles: 'always', 
-})
+import posthog, { ensureInitialized as ensurePosthogInitialized } from './util/posthog';
 
 // [SKYFARER]
 // react-dates needs to be initialized before using any react-dates component
@@ -44,6 +38,11 @@ import Routes from './routing/Routes';
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary'; // [SKYFARER]
+
+// Eager client-only PostHog initialization to capture early events
+if (typeof window !== 'undefined') {
+  ensurePosthogInitialized();
+}
 
 // If you want to change the language of default (fallback) translations,
 // change the imports to match the wanted locale:

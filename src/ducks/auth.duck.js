@@ -1,5 +1,5 @@
 import * as log from '../util/log';
-import posthog from 'posthog-js';
+import posthog from '../util/posthog';
 import { storableError } from '../util/errors';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
 import { createUserWithIdp } from '../util/api';
