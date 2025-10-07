@@ -1,5 +1,5 @@
 import { util as sdkUtil } from '../util/sdkLoader';
-import posthog from 'posthog-js';
+import posthog from '../util/posthog';
 import { denormalisedResponseEntities, ensureOwnListing } from '../util/data';
 import * as log from '../util/log';
 import { LISTING_STATE_DRAFT } from '../util/types';
