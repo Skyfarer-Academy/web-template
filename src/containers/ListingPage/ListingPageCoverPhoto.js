@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
+import { createInstance } from '../../util/sdkLoader';
 
 // Contexts
 import { useConfiguration } from '../../context/configurationContext';
@@ -263,12 +264,20 @@ export const ListingPageComponent = props => {
     onSendInquiry,
     setInquiryModalOpen,
   });
+
+  // You may want to do this inside your component or just before onSubmit
+  const sdk = createInstance({
+    clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
+    transitVerbose: process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true',
+  });
+
   const onSubmit = handleSubmit({
     ...commonParams,
     currentUser,
     callSetInitialValues,
     getListing,
     onInitializeCardPaymentData,
+    sdk, // Reschedule logic
   });
 
   const handleOrderSubmit = values => {

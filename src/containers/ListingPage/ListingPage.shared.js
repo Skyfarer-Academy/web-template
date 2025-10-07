@@ -8,7 +8,7 @@ import { hasPermissionToInitiateTransactions, isUserAuthorized } from '../../uti
 import { showErrorToast } from '../../util/toast'; // [SKYFARER]
 
 import {
-  NO_ACCESS_PAGE_INITIATE_TRANSACTIONS,
+  NO_ACCESS_PAGE_INITIATE_TRANSACTIONS, 
   NO_ACCESS_PAGE_USER_PENDING_APPROVAL,
   createSlug,
 } from '../../util/urlHelpers';
@@ -316,8 +316,13 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
   const end = initialValues?.orderData?.bookingDates?.bookingEnd;
 
   if (reschedule && !isProvider) {
-    const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
-    const request = transaction?.data?.attributes?.metadata?.rescheduleRequest;
+    // const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
+    // const request = transaction?.data?.attributes?.metadata?.rescheduleRequest;
+
+    // New reschedule logic 
+    const transactionResponse = await sdk.transactions.show({ id: new UUID(reschedule) });
+    const transaction = transactionResponse?.data?.data;
+    const request = transaction?.attributes?.metadata?.rescheduleRequest;
 
     if (request) {
       showErrorToast('You have already requested a reschedule for this booking');
@@ -338,8 +343,13 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
     try {
       const transition = 'transition/provider-reschedule';
 
-      const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
-      if (transaction?.data?.attributes?.metadata?.googleCalendarEventDetails) {
+      // const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
+      // if (transaction?.data?.attributes?.metadata?.googleCalendarEventDetails) {
+      
+      // New reschedule logic
+      const transactionResponse = await sdk.transactions.show({ id: new UUID(reschedule) });
+      const transaction = transactionResponse?.data?.data;
+      if (transaction?.attributes?.metadata?.googleCalendarEventDetails) {
         try {
           rescheduleGoogleEvent({ txId: reschedule, startDateTimeOverride: start, endDateTimeOverride: end });
         } catch (error) {

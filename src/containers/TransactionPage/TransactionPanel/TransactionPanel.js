@@ -555,7 +555,6 @@ export class TransactionPanelComponent extends Component {
               <>
                 <div className={css.mobileActionButtonSpacer}></div>
                 <div className={css.mobileActionButtons}>{actionButtons}</div>
-
                 {/* [SKYFARER] */}
                 <CancelModal
                   intl={intl}
@@ -566,16 +565,16 @@ export class TransactionPanelComponent extends Component {
                     stateData.secondaryButtonProps?.onAction();
                     cancelGoogleEvent({ txId: transaction.id.uuid });
                   }}
-                />
+                  />
               </>
             )}
 
             {this.state.showAdjustModal && (
               <AdjustBookingModal
-                transaction={transaction}
-                onClose={this.handleCloseAdjustModal}
-                onSubmit={this.handleAdjustBooking}
-                onManageDisableScrolling={this.props.onManageDisableScrolling}
+              transaction={transaction}
+              onClose={this.handleCloseAdjustModal}
+              onSubmit={this.handleAdjustBooking}
+              onManageDisableScrolling={this.props.onManageDisableScrolling}
               />
             )}
           </div>
@@ -591,7 +590,7 @@ export class TransactionPanelComponent extends Component {
                   isCustomer={isCustomer}
                   showListingImage={showListingImage}
                   listingImageConfig={config.layout.listingImage}
-                />
+                  />
 
                 <DetailCardHeadingsMaybe
                   showDetailCardHeadings={showDetailCardHeadings}
@@ -601,8 +600,8 @@ export class TransactionPanelComponent extends Component {
                       listingTitle
                     ) : (
                       <NamedLink
-                        name="ListingPage"
-                        params={{ id: listing.id?.uuid, slug: createSlug(listingTitle) }}
+                      name="ListingPage"
+                      params={{ id: listing.id?.uuid, slug: createSlug(listingTitle) }}
                       >
                         {listingTitle}
                       </NamedLink>
@@ -611,7 +610,7 @@ export class TransactionPanelComponent extends Component {
                   showPrice={showPrice}
                   price={listing?.attributes?.price}
                   intl={intl}
-                />
+                  />
                 {showOrderPanel ? orderPanel : null}
                 <BreakdownMaybe
                   className={css.breakdownContainer}
@@ -619,7 +618,6 @@ export class TransactionPanelComponent extends Component {
                   processName={stateData.processName}
                   priceVariantName={priceVariantName}
                 />
-
                 {/* [SKYFARER] */}
                 {googleCalendarEventDetails?.meetingLink && !transaction.attributes.lastTransition.includes('cancel') && (
                   <div className={css.meetingLink}>
