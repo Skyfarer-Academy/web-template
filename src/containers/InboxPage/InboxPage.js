@@ -102,7 +102,18 @@ const BookingTimeInfoMaybe = props => {
 
   const timeZone = transaction?.listing?.attributes?.availabilityPlan?.timezone || 'Etc/UTC';
   const { bookingStart, bookingEnd } = bookingData(transaction, lineItemUnitType, timeZone);
-  const displayTimezone = currentUser?.attributes?.profile?.publicData?.timeZone?.replace(/-/g, '/') || getDefaultTimeZoneOnBrowser() || timeZone; // [SKYFARER]
+  const TIMEZONE_FIXES = {
+    'America/Honolulu': 'Pacific/Honolulu',
+    // add others if needed
+  };
+
+  const displayTimezone =
+    TIMEZONE_FIXES[
+      currentUser?.attributes?.profile?.publicData?.timeZone?.replace(/-/g, '/')
+    ] ||
+    currentUser?.attributes?.profile?.publicData?.timeZone?.replace(/-/g, '/') ||
+    getDefaultTimeZoneOnBrowser() ||
+    timeZone;
 
   return (
     <TimeRange
