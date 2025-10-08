@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { createInstance } from '../../util/sdkLoader';
+// import { ensureUser } from '../../util/data';
 
 // Contexts
 import { useConfiguration } from '../../context/configurationContext';
@@ -160,6 +161,9 @@ export const ListingPageComponent = props => {
     currentListing.id && currentListing.attributes.state !== LISTING_STATE_PENDING_APPROVAL;
 
   const pendingIsApproved = isPendingApprovalVariant && isApproved;
+  const [showRescheduleConfirm, setShowRescheduleConfirm] = useState(false);
+  const [pendingValues, setPendingValues] = useState(null);
+
 
   // If a /pending-approval URL is shared, the UI requires
   // authentication and attempts to fetch the listing from own
@@ -265,7 +269,7 @@ export const ListingPageComponent = props => {
     setInquiryModalOpen,
   });
 
-  // You may want to do this inside your component or just before onSubmit
+  // For reschedule logic
   const sdk = createInstance({
     clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
     transitVerbose: process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true',
@@ -281,14 +285,32 @@ export const ListingPageComponent = props => {
   });
 
   const handleOrderSubmit = values => {
+    // const ensuredAuthor = ensureUser(currentListing.author);
+    const isOwnListing = currentUser?.id?.uuid === ensuredAuthor.id?.uuid;
     const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
-    if (isOwnListing || isCurrentlyClosed) {
+
+    // Detect if this is a reschedule flow (instructor trying to reschedule)
+    const searchParams = new URLSearchParams(window.location.search);
+    const isRescheduleFlow = searchParams.has('reschedule');
+
+    console.log("Own listing?", isOwnListing, "Reschedule mode?", isRescheduleFlow);
+
+    // 🟡 Instructor rescheduling → show confirmation modal
+    if (isOwnListing && isRescheduleFlow) {
+      setPendingValues(values);
+      setShowRescheduleConfirm(true);
+      return;
+    }
+
+    // Disallow booking own listing (normal case)
+    if ((isOwnListing && !isRescheduleFlow) || isCurrentlyClosed) {
       window.scrollTo(0, 0);
     } else {
       onSubmit(values);
     }
   };
 
+  
   const stateInfo = publicData.State_for_inperson;
   const cityInfo = publicData.City;
   const whereIam = publicData.where_i_am;
@@ -525,6 +547,36 @@ export const ListingPageComponent = props => {
             />
           </div>
         </div>
+        {showRescheduleConfirm && (
+        <div className={css.modalOverlay}>
+          <div className={css.modalWindow}>
+            <h3>Confirm Reschedule</h3>
+            <p>Are you sure you want to reschedule this session?</p>
+            <div className={css.modalActions}>
+              <button
+                className={css.modalYes}
+                onClick={() => {
+                  onSubmit(pendingValues);
+                  setShowRescheduleConfirm(false);
+                  setPendingValues(null);
+                }}
+              >
+                Yes, Reschedule
+              </button>
+              <button
+                className={css.modalNo}
+                onClick={() => {
+                  setShowRescheduleConfirm(false);
+                  setPendingValues(null);
+                }}
+              >
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       </LayoutSingleColumn>
     </Page>
   );
