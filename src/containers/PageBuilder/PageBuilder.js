@@ -73,7 +73,6 @@ const AnnouncementBar = () => {
   return (
     <>
       <div className={css.announcementBar}>
-        Concierge:{" "}
         <span className={css.announcementBar1}>
           Need help finding?{" "}
           <span
@@ -201,12 +200,12 @@ const PageBuilder = props => {
   const isLoggedOut = !currentUser;
   const isHomePage = location.pathname === '/';
 
-  console.log('DEBUG PageBuilder', {
+  /*console.log('DEBUG PageBuilder', {
     currentUser,
     pathname: location.pathname,
     isLoggedOut,
     isHomePage,
-  });
+  });*/
 
   return (
     <StaticPage {...pageMetaProps} {...pageProps}>

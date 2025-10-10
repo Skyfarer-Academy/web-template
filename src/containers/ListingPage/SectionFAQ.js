@@ -136,7 +136,7 @@ const SectionFAQMaybe = ({categoryLevel1}) => {
   // Only show FAQ for these listing categories
   const validCategories = ["Instructors-Flight-Schools-Clubs"];
 
-  console.log("FAQ categoryLevel1 received:", categoryLevel1);
+  // console.log("FAQ categoryLevel1 received:", categoryLevel1);
 
   if (!categoryLevel1 || !validCategories.includes(categoryLevel1)) {
     return null; // Don't render FAQ if not in valid category

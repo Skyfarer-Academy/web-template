@@ -296,7 +296,7 @@ export const ListingPageComponent = props => {
     const searchParams = new URLSearchParams(window.location.search);
     const isRescheduleFlow = searchParams.has('reschedule');
 
-    console.log("Own listing?", isOwnListing, "Reschedule mode?", isRescheduleFlow);
+    // console.log("Own listing?", isOwnListing, "Reschedule mode?", isRescheduleFlow);
 
     // 🟡 Instructor rescheduling → show confirmation modal
     if (isOwnListing && isRescheduleFlow) {
@@ -403,7 +403,7 @@ export const ListingPageComponent = props => {
         />
       </>
     ) : null;
-    console.log("Category---->", currentListing?.attributes?.publicData?.categoryLevel1);
+    // console.log("Category---->", currentListing?.attributes?.publicData?.categoryLevel1);
 
     return (
     <Page
