@@ -315,18 +315,23 @@ export const ListingPageComponent = props => {
   const cityInfo = publicData.City;
   const whereIam = publicData.where_i_am;
 
-  let locationInfo = '';
-  if (cityInfo && stateInfo) {
-    locationInfo = `${cityInfo}, ${stateInfo}`;
-  } else if (stateInfo) {
-    locationInfo = stateInfo;
-  } else if (cityInfo) {
-    locationInfo = cityInfo;
-  } else if (whereIam) {
-    locationInfo = whereIam;
-  }
+ // Replace underscores with spaces
+  const formattedCity = cityInfo ? cityInfo.replace(/_/g, ' ') : '';
+  const formattedState = stateInfo ? stateInfo.replace(/_/g, ' ') : '';
+  const formattedWhereIam = whereIam ? whereIam.replace(/_/g, ' ') : '';
 
-  console.log("City infromartion----->", cityInfo);
+  let locationInfo = '';
+  if (formattedCity && formattedState) {
+    locationInfo = `${formattedCity}, ${formattedState}`;
+  } else if (formattedState) {
+    locationInfo = formattedState;
+  } else if (formattedCity) {
+    locationInfo = formattedCity;
+  } else if (formattedWhereIam) {
+    locationInfo = formattedWhereIam;
+  }
+  
+  //console.log("City infromartion----->", cityInfo);
   const facebookImages = listingImages(currentListing, 'facebook');
   const twitterImages = listingImages(currentListing, 'twitter');
   const schemaImages = listingImages(
@@ -336,7 +341,7 @@ export const ListingPageComponent = props => {
   const marketplaceName = config.marketplaceName;
   // Final fallback logic for schemaTitle
   const schemaTitle = locationInfo
-    ? `${title} - Pilot Flight training in ${locationInfo}`
+    ? `${title} - Pilot Flight training near ${locationInfo}`
     : title;
   // You could add reviews, sku, etc. into page schema
   // Read more about product schema
