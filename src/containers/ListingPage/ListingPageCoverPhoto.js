@@ -93,6 +93,7 @@ import SectionLinks from './SectionLinks'; // [SKYFARER]
 import CustomListingFields from './CustomListingFields';
 import CustomUserFields from '../ProfilePage/ProfilePage'; // [SKYFARER]
 import ActionBarMaybe from './ActionBarMaybe';
+import SectionFAQMaybe from './SectionFAQ.js'; // [SKYFARER - add faq section]
 
 import css from './ListingPage.module.css';
 
@@ -136,6 +137,8 @@ export const ListingPageComponent = props => {
     routeConfiguration,
     showOwnListingsOnly,
     onUpdateFavorites,
+    listing,
+    categoryLevel1,
     ...restOfProps
   } = props;
 
@@ -400,8 +403,9 @@ export const ListingPageComponent = props => {
         />
       </>
     ) : null;
+    console.log("Category---->", currentListing?.attributes?.publicData?.categoryLevel1);
 
-  return (
+    return (
     <Page
       title={schemaTitle}
       scrollingDisabled={scrollingDisabled}
@@ -496,6 +500,7 @@ export const ListingPageComponent = props => {
               currentUser={currentUser}
               onManageDisableScrolling={onManageDisableScrolling}
             />
+            <SectionFAQMaybe categoryLevel1={currentListing?.attributes?.publicData?.categoryLevel1} />
 
             {/* [SKYFARER] */}
             {process.env.REACT_APP_LISTING_PAGE_SHOW_USER_FIELDS === 'true' && (

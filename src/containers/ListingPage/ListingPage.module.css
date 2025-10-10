@@ -643,7 +643,8 @@
 }
 
 .sectionReviews,
-.sectionAuthor {
+.sectionAuthor,
+.faqSection {
   padding: 0 24px;
   margin-top: 42px;
   scroll-margin-top: calc(var(--topbarHeight) + 24px);
@@ -975,4 +976,58 @@
 
 .modalNo:hover {
   background-color: #999;
+}
+
+.faqHeading {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--colorGrey900);
+}
+
+.faqContainer {
+  border: 1px solid var(--colorGrey200);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--colorGrey200);
+}
+
+.faqItem:last-child {
+  border-bottom: none;
+}
+
+.faqQuestion {
+  width: 100%;
+  background: white;
+  border: none;
+  text-align: left;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.faqQuestionOpen {
+  color: var(--marketplaceColor);
+}
+
+.faqIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--colorGrey500);
+}
+
+.faqAnswer {
+  background: #f9f9f9;
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+  text-align: justify;
 }
