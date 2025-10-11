@@ -3,6 +3,8 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
+import { createInstance } from '../../util/sdkLoader';
+// import { ensureUser } from '../../util/data';
 
 // Contexts
 import { useConfiguration } from '../../context/configurationContext';
@@ -91,6 +93,7 @@ import SectionLinks from './SectionLinks'; // [SKYFARER]
 import CustomListingFields from './CustomListingFields';
 import CustomUserFields from '../ProfilePage/ProfilePage'; // [SKYFARER]
 import ActionBarMaybe from './ActionBarMaybe';
+import SectionFAQMaybe from './SectionFAQ.js'; // [SKYFARER - add faq section]
 
 import css from './ListingPage.module.css';
 
@@ -134,6 +137,8 @@ export const ListingPageComponent = props => {
     routeConfiguration,
     showOwnListingsOnly,
     onUpdateFavorites,
+    listing,
+    categoryLevel1,
     ...restOfProps
   } = props;
 
@@ -159,6 +164,9 @@ export const ListingPageComponent = props => {
     currentListing.id && currentListing.attributes.state !== LISTING_STATE_PENDING_APPROVAL;
 
   const pendingIsApproved = isPendingApprovalVariant && isApproved;
+  const [showRescheduleConfirm, setShowRescheduleConfirm] = useState(false);
+  const [pendingValues, setPendingValues] = useState(null);
+
 
   // If a /pending-approval URL is shared, the UI requires
   // authentication and attempts to fetch the listing from own
@@ -263,39 +271,70 @@ export const ListingPageComponent = props => {
     onSendInquiry,
     setInquiryModalOpen,
   });
+
+  // For reschedule logic
+  const sdk = createInstance({
+    clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
+    transitVerbose: process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true',
+  });
+
   const onSubmit = handleSubmit({
     ...commonParams,
     currentUser,
     callSetInitialValues,
     getListing,
     onInitializeCardPaymentData,
+    sdk, // Reschedule logic
   });
 
   const handleOrderSubmit = values => {
+    // const ensuredAuthor = ensureUser(currentListing.author);
+    const isOwnListing = currentUser?.id?.uuid === ensuredAuthor.id?.uuid;
     const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
-    if (isOwnListing || isCurrentlyClosed) {
+
+    // Detect if this is a reschedule flow (instructor trying to reschedule)
+    const searchParams = new URLSearchParams(window.location.search);
+    const isRescheduleFlow = searchParams.has('reschedule');
+
+    // console.log("Own listing?", isOwnListing, "Reschedule mode?", isRescheduleFlow);
+
+    // 🟡 Instructor rescheduling → show confirmation modal
+    if (isOwnListing && isRescheduleFlow) {
+      setPendingValues(values);
+      setShowRescheduleConfirm(true);
+      return;
+    }
+
+    // Disallow booking own listing (normal case)
+    if ((isOwnListing && !isRescheduleFlow) || isCurrentlyClosed) {
       window.scrollTo(0, 0);
     } else {
       onSubmit(values);
     }
   };
 
+  
   const stateInfo = publicData.State_for_inperson;
   const cityInfo = publicData.City;
   const whereIam = publicData.where_i_am;
 
-  let locationInfo = '';
-  if (cityInfo && stateInfo) {
-    locationInfo = `${cityInfo}, ${stateInfo}`;
-  } else if (stateInfo) {
-    locationInfo = stateInfo;
-  } else if (cityInfo) {
-    locationInfo = cityInfo;
-  } else if (whereIam) {
-    locationInfo = whereIam;
-  }
+ // Replace underscores with spaces
+  const formattedCity = cityInfo ? cityInfo.replace(/_/g, ' ') : '';
+  const formattedState = stateInfo ? stateInfo.replace(/_/g, ' ') : '';
+  const formattedWhereIam = whereIam ? whereIam.replace(/_/g, ' ') : '';
 
-  console.log("City infromartion----->", cityInfo);
+  let locationInfo = '';
+  if (formattedCity && formattedState) {
+    locationInfo = `${formattedCity}, ${formattedState}`;
+  } else if (formattedState) {
+    locationInfo = formattedState;
+  } else if (formattedCity) {
+    locationInfo = formattedCity;
+  } else if (formattedWhereIam) {
+    locationInfo = formattedWhereIam;
+  }
+  
+  //console.log("City infromartion----->", cityInfo);
   const facebookImages = listingImages(currentListing, 'facebook');
   const twitterImages = listingImages(currentListing, 'twitter');
   const schemaImages = listingImages(
@@ -305,7 +344,7 @@ export const ListingPageComponent = props => {
   const marketplaceName = config.marketplaceName;
   // Final fallback logic for schemaTitle
   const schemaTitle = locationInfo
-    ? `${title} - Pilot Flight training in ${locationInfo}`
+    ? `${title} - Pilot Flight training near ${locationInfo}`
     : title;
   // You could add reviews, sku, etc. into page schema
   // Read more about product schema
@@ -364,8 +403,9 @@ export const ListingPageComponent = props => {
         />
       </>
     ) : null;
+    // console.log("Category---->", currentListing?.attributes?.publicData?.categoryLevel1);
 
-  return (
+    return (
     <Page
       title={schemaTitle}
       scrollingDisabled={scrollingDisabled}
@@ -460,6 +500,7 @@ export const ListingPageComponent = props => {
               currentUser={currentUser}
               onManageDisableScrolling={onManageDisableScrolling}
             />
+            <SectionFAQMaybe categoryLevel1={currentListing?.attributes?.publicData?.categoryLevel1} />
 
             {/* [SKYFARER] */}
             {process.env.REACT_APP_LISTING_PAGE_SHOW_USER_FIELDS === 'true' && (
@@ -516,6 +557,36 @@ export const ListingPageComponent = props => {
             />
           </div>
         </div>
+        {showRescheduleConfirm && (
+        <div className={css.modalOverlay}>
+          <div className={css.modalWindow}>
+            <h3>Confirm Reschedule</h3>
+            <p>Are you sure you want to reschedule this session?</p>
+            <div className={css.modalActions}>
+              <button
+                className={css.modalYes}
+                onClick={() => {
+                  onSubmit(pendingValues);
+                  setShowRescheduleConfirm(false);
+                  setPendingValues(null);
+                }}
+              >
+                Yes, Reschedule
+              </button>
+              <button
+                className={css.modalNo}
+                onClick={() => {
+                  setShowRescheduleConfirm(false);
+                  setPendingValues(null);
+                }}
+              >
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       </LayoutSingleColumn>
     </Page>
   );

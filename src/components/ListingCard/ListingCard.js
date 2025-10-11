@@ -199,6 +199,10 @@ export const ListingCard = props => {
   //console.log(listing.author);
   const authorName = author.attributes.profile.displayName;
 
+  const stateInfo = publicData.State_for_inperson;
+  const cityInfo = publicData.City;
+  const whereIam = publicData.where_i_am;
+
   const { listingType, cardStyle } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -339,6 +343,17 @@ export const ListingCard = props => {
                 longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
                 longWordClass: css.longWord,
               })}
+              {showStateInfo && (cityInfo || stateInfo || whereIam)
+                ? `, ${
+                    cityInfo && stateInfo
+                      ? `${cityInfo.replace(/_/g, ' ')}, ${stateInfo.replace(/_/g, ' ')}`
+                      : cityInfo
+                      ? cityInfo.replace(/_/g, ' ')
+                      : stateInfo
+                      ? stateInfo.replace(/_/g, ' ')
+                      : whereIam.replace(/_/g, ' ')
+                  }`
+                : null}
             </div>
           )}
           {showAuthorInfo ? (

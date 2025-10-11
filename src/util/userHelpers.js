@@ -215,13 +215,19 @@ export const isUserSubscribed = currentUser => currentUser?.attributes?.profile?
  * @returns a single user type configuration, if found
  */
 const getCurrentUserTypeConfig = (config, currentUser) => {
-  const { userTypes } = config.user;
+  const { userTypes } = config.user || {};
+
+  const currentUserType = currentUser?.attributes?.profile?.publicData?.userType;
+  if (!userTypes || !currentUserType) {
+    console.warn("Missing userTypes or currentUserType", { userTypes, currentUserType });
+    return null;
+  }
+
   return userTypes.find(
-    // [SKYFARER] convert to lowercase to avoid case sensitivity (old IDs were mixed-case)
-    // [SKYFARER] convert to lowercase to avoid case sensitivity (old IDs were mixed-case)
-    ut => ut.userType.toLowerCase().toLowerCase() === currentUser?.attributes?.profile?.publicData?.userType.toLowerCase().toLowerCase()  
+    ut => ut.userType?.toLowerCase() === currentUserType.toLowerCase()
   );
 };
+
 
 /**
  * Check if the links for creating a new listing should be shown to the
@@ -237,13 +243,6 @@ export const showCreateListingLinkForUser = (config, currentUser) => {
 
   const { accountLinksVisibility } = currentUserTypeConfig || {};
 
-  return currentUser && accountLinksVisibility
-    ? accountLinksVisibility.postListings
-    : currentUser
-    ? true
-    : topbar?.postListingsLink
-    ? topbar.postListingsLink.showToUnauthenticatedUsers
-    : true;
   return currentUser && accountLinksVisibility
     ? accountLinksVisibility.postListings
     : currentUser

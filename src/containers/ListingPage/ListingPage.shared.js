@@ -8,7 +8,7 @@ import { hasPermissionToInitiateTransactions, isUserAuthorized } from '../../uti
 import { showErrorToast } from '../../util/toast'; // [SKYFARER]
 
 import {
-  NO_ACCESS_PAGE_INITIATE_TRANSACTIONS,
+  NO_ACCESS_PAGE_INITIATE_TRANSACTIONS, 
   NO_ACCESS_PAGE_USER_PENDING_APPROVAL,
   createSlug,
 } from '../../util/urlHelpers';
@@ -316,8 +316,13 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
   const end = initialValues?.orderData?.bookingDates?.bookingEnd;
 
   if (reschedule && !isProvider) {
-    const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
-    const request = transaction?.data?.attributes?.metadata?.rescheduleRequest;
+    // const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
+    // const request = transaction?.data?.attributes?.metadata?.rescheduleRequest;
+
+    // New reschedule logic 
+    const transactionResponse = await sdk.transactions.show({ id: new UUID(reschedule) });
+    const transaction = transactionResponse?.data?.data;
+    const request = transaction?.attributes?.metadata?.rescheduleRequest;
 
     if (request) {
       showErrorToast('You have already requested a reschedule for this booking');
@@ -335,38 +340,52 @@ export const handleSubmit = parameters => async values => { // [SKYFARER MERGE: 
   }
 
   if (reschedule && isProvider) {
-    try {
-      const transition = 'transition/provider-reschedule';
+  try {
+    const transition = 'transition/provider-reschedule';
 
-      const { data: transaction } = await sdk.transactions.show({ id: new UUID(reschedule) });
-      if (transaction?.data?.attributes?.metadata?.googleCalendarEventDetails) {
-        try {
-          rescheduleGoogleEvent({ txId: reschedule, startDateTimeOverride: start, endDateTimeOverride: end });
-        } catch (error) {
-          console.error(error);
-          showErrorToast('Error rescheduling Google Calendar event: ' + error.message);
-        }
+    // Fetch transaction from SDK
+    const transactionResponse = await sdk.transactions.show({ id: new UUID(reschedule) });
+    const transaction = transactionResponse?.data?.data;
+
+    // Reschedule Google Calendar event if it exists
+    if (transaction?.attributes?.metadata?.googleCalendarEventDetails) {
+      try {
+        await rescheduleGoogleEvent({
+          txId: reschedule,
+          startDateTimeOverride: start,
+          endDateTimeOverride: end,
+        });
+      } catch (error) {
+        console.error('Google Calendar reschedule failed:', error);
+        showErrorToast('Error updating Google Calendar event. Please check manually.');
+        // continue execution even if Google Calendar fails
       }
-
-      const result = await sdk.transactions.transition({
-        id: new UUID(reschedule),
-        params: { bookingStart: start, bookingEnd: end },
-        transition
-      });
-
-      if (result.status === 200) {
-        history.push(createResourceLocatorString('SaleDetailsPage', routes, { id: reschedule }, {}));
-      } else {
-        console.error(result);
-        showErrorToast(result.data?.data?.errors?.join(', ') || 'Error rescheduling booking');
-      }
-    } catch (error) {
-      console.error(error);
-      showErrorToast(error.message);
     }
 
-    return;
+    // Perform the provider-reschedule transition
+    const result = await sdk.transactions.transition({
+      id: new UUID(reschedule),
+      params: { bookingStart: start, bookingEnd: end },
+      transition,
+    });
+
+    if (result.status === 200) {
+      // Success: redirect to SaleDetailsPage
+      history.push(createResourceLocatorString('SaleDetailsPage', routes, { id: reschedule }, {}));
+    } else {
+      console.error('Provider reschedule transition failed:', result);
+      const errorMsg =
+        result.data?.data?.errors?.join(', ') || 'Error rescheduling booking';
+      showErrorToast(errorMsg);
+    }
+  } catch (error) {
+    console.error('Provider reschedule error:', error);
+    showErrorToast(error.message);
   }
+
+  return;
+  }
+
   // [/SKYFARER]
 
   // Redirect to CheckoutPage

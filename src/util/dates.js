@@ -999,11 +999,40 @@ export const getTimeZoneOffset = (timeZone) => {
   return offsetString;
 };
 
+// [Fix for Hawaii-Aleutian time zone site crash (Checkout Page)]
+  const TIMEZONE_FIXES = {
+    'America/Honolulu': 'Pacific/Honolulu',
+  };
+
+  const normalizeTimeZone = tz => {
+    if (!tz) return 'UTC';
+    const cleaned = tz.replace(/-/g, '/');
+    return TIMEZONE_FIXES[cleaned] || cleaned;
+  };
+
 // [SKYFARER]
 export const getTimeZoneBadgeContent = (timeZone) => {
-  const date = new Date();
-  const utc = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
-  const local = new Date(date.toLocaleString('en-US', { timeZone }));
-  const longName = new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'long' }).format(date).split(' ')[1];
-  return `${longName} UTC ${getTimeZoneOffset(timeZone)}`;
+  const normalizeZone = normalizeTimeZone(timeZone);
+
+  // const date = new Date();
+  // const utc = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+  // const local = new Date(date.toLocaleString('en-US', { timeZone }));
+  // const longName = new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'long' }).format(date).split(' ')[1];
+  // return `${longName} UTC ${getTimeZoneOffset(timeZone)}`;
+  try {
+    const date = new Date();
+    const utc = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const local = new Date(date.toLocaleString('en-US', { timeZone: normalizeZone }));
+    const longName = new Intl.DateTimeFormat('en-US', {
+      timeZone: normalizeZone,
+      timeZoneName: 'long',
+    })
+      .format(date)
+      .split(' ')[1];
+
+    return `${longName} UTC ${getTimeZoneOffset(normalizeZone)}`;
+  } catch (e) {
+    console.error('Invalid timezone detected:', timeZone, '→ using UTC fallback', e);
+    return `UTC ${getTimeZoneOffset('UTC')}`;
+  }
 }
