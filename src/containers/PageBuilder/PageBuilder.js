@@ -69,6 +69,7 @@ const AnnouncementBar = () => {
     setFormType(type);
     setShowModal(true);
   };
+  
 
   return (
     <>
@@ -189,6 +190,19 @@ const PageBuilder = props => {
   // - "sections" (data that goes inside <body>)
   // - "meta" (which is data that goes inside <head>)
   const { sections = [], meta = {} } = pageAssetsData || {};
+
+  // DEBUG: log all article sections
+  if (sections.length > 0) {
+    console.log('All article sections on this page:');
+    sections.forEach((sec, index) => {
+      if (sec.sectionType === 'article') {
+        console.log(
+          `Article ${index + 1}: id=${sec.sectionId}, title=${sec.title?.content}`
+        );
+      }
+    });
+  }
+
   const pageMetaProps = getMetadata(meta, schemaType, options?.fieldComponents);
 
   const layoutAreas = `
