@@ -1,7 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import { useSelector } from 'react-redux';
-import { currentUserSelector } from '../../ducks/user.duck.js';
-import { useLocation } from 'react-router-dom/cjs/react-router-dom.js';
+import React from 'react';
 
 import { IconSpinner, LayoutComposer } from '../../components/index.js';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer.js';
@@ -51,70 +48,6 @@ const getMetadata = (meta, schemaType, fieldOptions) => {
     schema: pageSchemaForSEO,
     socialSharing: openGraph,
   };
-};
-
-// Add a bar at the top to display the Monday form link
-const AnnouncementBar = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [ formType, setFormType] = useState(null);
-
-  // Form URLs
-
-  const mondayformlinks = {
-    request: "https://forms.monday.com/forms/embed/e84e8aefa14ef0f5d78bccf3a4ab3c75?r=use1",
-    question: "https://forms.monday.com/forms/embed/ed66dd220397ba244f5f8263ea14576e?r=use1",
-  };
-
-  const openForm = (type) => {
-    setFormType(type);
-    setShowModal(true);
-  };
-
-  return (
-    <>
-      <div className={css.announcementBar}>
-        <span className={css.announcementBar1}>
-          Need help finding?{" "}
-          <span
-            className={css.announcementLink}
-            onClick={() => openForm("request")}
-          >
-            Submit your request
-          </span>{" "}
-          or{" "}
-          <span
-            className={css.announcementLink}
-            onClick={() => openForm("question")}
-          >
-            ask a question
-          </span>
-        </span>
-      </div>
-
-      {showModal && (
-        <div className={css.modalOverlay} onClick={() => setShowModal(false)}>
-          <div
-            className={css.modalContent}
-            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
-          >
-            <button
-              className={css.closeBtn}
-              onClick={() => setShowModal(false)}
-            >
-              &times;
-            </button>
-            <iframe
-              src={mondayformlinks[formType]}
-              title={
-                formType === "request" ? "Submit Your Request" : "Ask a Question"
-              }
-            >
-            </iframe>
-          </div>
-        </div>
-      )}
-    </>
-  );
 };
 
 const LoadingSpinner = () => {
@@ -178,9 +111,6 @@ const PageBuilder = props => {
     ...pageProps
   } = props;
 
-  const currentUser = useSelector(currentUserSelector);
-  const location = useLocation();
-
   if (!pageAssetsData && fallbackPage && !inProgress && error) {
     return fallbackPage;
   }
@@ -196,17 +126,6 @@ const PageBuilder = props => {
     main
     footer
   `;
-
-  const isLoggedOut = !currentUser;
-  const isHomePage = location.pathname === '/';
-
-  /*console.log('DEBUG PageBuilder', {
-    currentUser,
-    pathname: location.pathname,
-    isLoggedOut,
-    isHomePage,
-  });*/
-
   return (
     <StaticPage {...pageMetaProps} {...pageProps}>
       <LayoutComposer areas={layoutAreas} className={css.layout}>
@@ -215,7 +134,6 @@ const PageBuilder = props => {
           return (
             <>
               <Topbar as="header" className={css.topbar}>
-                {isLoggedOut && isHomePage ? <AnnouncementBar /> : null}
                 <TopbarContainer currentPage={currentPage} />
               </Topbar>
               <Main as="main" className={css.main}>
