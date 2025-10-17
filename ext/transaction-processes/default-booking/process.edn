@@ -10,16 +10,20 @@
    [{:name :action/update-protected-data}
     {:name :action/create-pending-booking, :config {:type :time}}
     {:name :action/privileged-set-line-items}
-    {:name :action/stripe-create-payment-intent}],
+    {:name :action/stripe-create-payment-intent,
+     :config {:payment-methods [:card  :klarna]}
+    }],
    :to :state/pending-payment,
-   :privileged? true}
+   :privileged? true} 
   {:name :transition/request-payment-after-inquiry,
    :actor :actor.role/customer,
    :actions
    [{:name :action/update-protected-data}
     {:name :action/create-pending-booking, :config {:type :time}}
     {:name :action/privileged-set-line-items}
-    {:name :action/stripe-create-payment-intent}],
+    {:name :action/stripe-create-payment-intent,
+     :config {:payment-methods [:card :klarna]}
+    }],
    :from :state/inquiry,
    :to :state/pending-payment,
    :privileged? true}

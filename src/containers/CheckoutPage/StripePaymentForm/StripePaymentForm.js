@@ -293,7 +293,10 @@ const initialState = {
 class StripePaymentForm extends Component {
   constructor(props) {
     super(props);
-    this.state = initialState;
+    this.state = {
+      ...initialState,
+      paymentOption: 'card'
+    };
     this.updateBillingDetailsToMatchShippingAddress = this.updateBillingDetailsToMatchShippingAddress.bind(
       this
     );
@@ -444,7 +447,9 @@ class StripePaymentForm extends Component {
         ensurePaymentMethodCard(defaultPaymentMethod).id
       ),
     };
-    onSubmit(params);
+    const paymentOption = this.state.paymentOption || 'card';
+    // pass the payment option {BNPL KLARNA}
+    onSubmit({...params, paymentOption});
   }
 
   paymentForm(formRenderProps) {
@@ -670,6 +675,28 @@ class StripePaymentForm extends Component {
           {hasPaymentErrors ? (
             <span className={css.errorMessage}>{paymentErrorMessage}</span>
           ) : null}
+          {/* Payment method selector (Card / Klarna) */}
+          <div className={css.paymentOptionSelector}>
+            <label>
+              <input
+                type="radio"
+                name="paymentOption"
+                value="card"
+                defaultChecked
+                onChange={() => this.setState({ paymentOption: 'card' })}
+              />
+              Pay with Card
+            </label>
+            <label style={{ marginLeft: '1rem' }}>
+              <input
+                type="radio"
+                name="paymentOption"
+                value="klarna"
+                onChange={() => this.setState({ paymentOption: 'klarna' })}
+              />
+              Pay with Klarna
+            </label>
+          </div>
           <PrimaryButton
             className={css.submitButton}
             type="submit"

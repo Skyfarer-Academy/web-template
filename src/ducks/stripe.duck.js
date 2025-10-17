@@ -307,6 +307,59 @@ export const confirmCardPayment = params => dispatch => {
     });
 };
 
+// Enable KLARNA BNPL
+export const confirmKlarnaPayment = params => dispatch => {
+  const { stripe, stripePaymentIntentClientSecret, paymentParams, orderId } = params;
+  const transactionId = orderId;
+
+  dispatch(confirmCardPaymentRequest()); // reuse same Redux actions
+
+  const doConfirmKlarnaPayment = () =>
+    stripe
+      .confirmKlarnaPayment(stripePaymentIntentClientSecret, paymentParams)
+      .then(response => {
+        if (response.error) {
+          return Promise.reject(response);
+        } else {
+          dispatch(confirmCardPaymentSuccess(response));
+          return { ...response, transactionId };
+        }
+      });
+
+  return stripe
+    .retrievePaymentIntent(stripePaymentIntentClientSecret)
+    .then(response => {
+      if (response.error) {
+        return Promise.reject(response);
+      } else if (STRIPE_PI_HAS_PASSED_CONFIRM.includes(response?.paymentIntent?.status)) {
+        dispatch(confirmCardPaymentSuccess(response));
+        return { ...response, transactionId };
+      } else {
+        return doConfirmKlarnaPayment();
+      }
+    })
+    .catch(err => {
+      const e = err.error || storableError(err);
+      dispatch(confirmCardPaymentError(e));
+
+      const { code, doc_url, message, payment_intent } = err.error || {};
+      const loggableError = err.error
+        ? {
+            code,
+            message,
+            doc_url,
+            paymentIntentStatus: payment_intent
+              ? payment_intent.status
+              : 'no payment_intent included',
+          }
+        : e;
+      log.error(loggableError, 'stripe-handle-klarna-payment-failed', {
+        stripeMessage: loggableError.message,
+      });
+      throw e;
+    });
+};
+
 export const handleCardSetup = params => dispatch => {
   // It's required to use the same instance of Stripe as where the card has been created
   // so that's why Stripe needs to be passed here and we can't create a new instance.

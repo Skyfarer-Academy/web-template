@@ -23,6 +23,7 @@ import {
   hasPaymentExpired,
   hasTransactionPassedPendingPayment,
   processCheckoutWithPayment,
+  processCheckoutWithKlarna,
   setOrderPageInitialValues,
 } from './CheckoutPageTransactionHelpers.js';
 import { getErrorMessages } from './ErrorMessages';
@@ -294,6 +295,33 @@ const handleSubmit = (values, process, props, stripe, submitting, setSubmitting)
   // which is either initiate-transition or initiate-transition-after-enquiry
   const orderParams = getOrderParams(pageData, shippingDetails, optionalPaymentParams, config);
 
+  // KLARNA integration
+  if (selectedPaymentMethod === 'klarna') {
+    // Klarna payment flow
+    processCheckoutWithKlarna(orderParams, requestPaymentParams, currentUser) // implement this function
+      .then(response => {
+        const { orderId, messageSuccess, paymentMethodSaved } = response;
+        setSubmitting(false);
+
+        const initialMessageFailedToTransaction = messageSuccess ? null : orderId;
+        const orderDetailsPath = pathByRouteName('OrderDetailsPage', routeConfiguration, {
+          id: orderId.uuid,
+        });
+        const initialValues = {
+          initialMessageFailedToTransaction,
+          savePaymentMethodFailed: !paymentMethodSaved,
+        };
+
+        setOrderPageInitialValues(initialValues, routeConfiguration, dispatch);
+        onSubmitCallback();
+        history.push(orderDetailsPath);
+      })
+      .catch(err => {
+        console.error(err);
+        setSubmitting(false);
+      });
+    return; // exit so card flow is not triggered
+  }
   // There are multiple XHR calls that needs to be made against Stripe API and Sharetribe Marketplace API on checkout with payments
   processCheckoutWithPayment(orderParams, requestPaymentParams, currentUser) // [SKYFARER MERGE: +currentUser]
     .then(response => {

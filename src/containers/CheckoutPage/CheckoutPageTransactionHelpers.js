@@ -428,6 +428,111 @@ export const processCheckoutWithPayment = (orderParams, extraPaymentParams, curr
 };
 
 /**
+ * Create call sequence for checkout with Klarna via Stripe PaymentIntents.
+ *
+ * @param {Object} orderParams - params for initiating the order
+ * @param {Object} extraPaymentParams - contains extra params needed in the checkout sequence
+ * @param {Object} currentUser
+ * @returns Promise that goes through each step in the Klarna checkout sequence
+ */
+export const processCheckoutWithKlarna = (orderParams, extraPaymentParams, currentUser) => {
+  const {
+    hasPaymentIntentUserActionsDone,
+    message,
+    onInitiateOrder,
+    onConfirmPayment,
+    onSendMessage,
+    pageData,
+    setPageData,
+    sessionStorageKey,
+  } = extraPaymentParams;
+
+  const storedTx = ensureTransaction(pageData.transaction);
+
+  let createdPaymentIntent = null;
+
+  ////////////////////////////////////////////////
+  // Step 1: initiate order                     //
+  ////////////////////////////////////////////////
+  const fnRequestPayment = fnParams => {
+    const requestTransition =
+      storedTx?.attributes?.lastTransition === 'transition/inquire'
+        ? 'transition/request-payment-after-inquiry'
+        : 'transition/request-payment';
+    const isPrivileged = true; // Klarna payments are always privileged for initiator
+
+    const hasPaymentIntents = storedTx.attributes.protectedData?.klarnaPaymentIntent;
+
+    // If payment intent already exists, skip initiation
+    const orderPromise = hasPaymentIntents
+      ? Promise.resolve(storedTx)
+      : onInitiateOrder(fnParams, pageData.listing.attributes.publicData.transactionProcessAlias, storedTx.id, requestTransition, isPrivileged);
+
+    return orderPromise.then(order => {
+      // Store Klarna PaymentIntent if exists
+      createdPaymentIntent = order?.attributes?.protectedData?.klarnaPaymentIntent;
+      persistTransaction(order, pageData, storeData, setPageData, sessionStorageKey);
+      return order;
+    });
+  };
+
+  ////////////////////////////////////////////////
+  // Step 2: redirect to Klarna checkout       //
+  ////////////////////////////////////////////////
+  const fnConfirmKlarnaPayment = order => {
+    if (!createdPaymentIntent) throw new Error('Missing Klarna PaymentIntent');
+
+    // Klarna flow usually requires redirect
+    // You might replace this with your Stripe.js redirect or Klarna SDK
+    if (!hasPaymentIntentUserActionsDone) {
+      // Example: redirect the browser
+      window.location.href = createdPaymentIntent.redirectUrl;
+    }
+
+    return Promise.resolve({ transactionId: order.id, paymentIntent: createdPaymentIntent });
+  };
+
+  //////////////////////////////////
+  // Step 3: complete order        //
+  //////////////////////////////////
+  const fnConfirmPayment = fnParams => {
+    const transactionId = fnParams.transactionId;
+    const transitionName = 'transition/confirm-payment';
+    const isTransitionedAlready = storedTx?.attributes?.lastTransition === transitionName;
+
+    const orderPromise = isTransitionedAlready
+      ? Promise.resolve(storedTx)
+      : onConfirmPayment(transactionId, transitionName, {});
+
+    return orderPromise.then(order => {
+      persistTransaction(order, pageData, storeData, setPageData, sessionStorageKey);
+      return order;
+    });
+  };
+
+  //////////////////////////////////
+  // Step 4: send initial message //
+  //////////////////////////////////
+  const fnSendMessage = order => {
+    const orderId = order.id;
+    return onSendMessage({ id: orderId, message });
+  };
+
+  // Compose async steps
+  const applyAsync = (acc, val) => acc.then(val);
+  const composeAsync = (...funcs) => x => funcs.reduce(applyAsync, Promise.resolve(x));
+  const handleKlarnaCheckout = composeAsync(
+    fnRequestPayment,
+    fnConfirmKlarnaPayment,
+    fnConfirmPayment,
+    fnSendMessage
+  );
+
+  return handleKlarnaCheckout(orderParams);
+};
+
+
+/**
  * Initialize OrderDetailsPage with given initialValues.
  *
  * @param {Object} initialValues
