@@ -210,11 +210,11 @@ const checkOnetimePaymentFields = (
 const LocationOrShippingDetails = props => {
   const {
     askShippingDetails,
-    showPickUplocation,
+    showPickUpLocation,
+    showLocation,
     listingLocation,
     formApi,
     locale,
-    isBooking,
     isFuzzyLocation,
     intl,
   } = props;
@@ -227,14 +227,14 @@ const LocationOrShippingDetails = props => {
 
   return askShippingDetails ? (
     <ShippingDetails intl={intl} formApi={formApi} locale={locale} />
-  ) : !isBooking && showPickUplocation ? (
+  ) : showPickUpLocation ? (
     <div className={css.locationWrapper}>
       <Heading as="h3" rootClassName={css.heading}>
         <FormattedMessage id="StripePaymentForm.pickupDetailsTitle" />
       </Heading>
       <p className={css.locationDetails}>{locationDetails}</p>
     </div>
-  ) : isBooking && !isFuzzyLocation ? (
+  ) : showLocation && !isFuzzyLocation ? (
     <div className={css.locationWrapper}>
       <Heading as="h3" rootClassName={css.heading}>
         <FormattedMessage id="StripePaymentForm.locationDetailsTitle" />
@@ -280,7 +280,8 @@ const initialState = {
  * @param {boolean} props.hasHandledCardPayment - Whether the card payment has been handled
  * @param {Object} props.defaultPaymentMethod - The default payment method
  * @param {boolean} props.askShippingDetails - Whether to ask for shipping details
- * @param {boolean} props.showPickUplocation - Whether to show the pickup location
+ * @param {boolean} props.showPickUpLocation - Whether to show the pickup location
+ * @param {boolean} props.showLocation - Whether to show the location address
  * @param {string} props.totalPrice - The total price
  * @param {string} props.locale - The locale
  * @param {Object} props.listingLocation - The listing location
@@ -455,7 +456,7 @@ class StripePaymentForm extends Component {
       loadingData,
       formId,
       paymentInfo, // [SKYFARER]
-      authorDisplayName,
+      providerDisplayName,
       showInitialMessageInput,
       intl,
       initiateOrderError,
@@ -468,7 +469,8 @@ class StripePaymentForm extends Component {
       defaultPaymentMethod,
       listingLocation,
       askShippingDetails,
-      showPickUplocation,
+      showLocation,
+      showPickUpLocation,
       totalPrice,
       locale,
       stripePublishableKey,
@@ -529,7 +531,7 @@ class StripePaymentForm extends Component {
 
     const messagePlaceholder = intl.formatMessage(
       { id: 'StripePaymentForm.messagePlaceholder' },
-      { name: authorDisplayName }
+      { name: providerDisplayName }
     );
 
     const messageOptionalText = intl.formatMessage({
@@ -565,9 +567,9 @@ class StripePaymentForm extends Component {
       <Form className={classes} onSubmit={handleSubmit} enforcePagePreloadFor="OrderDetailsPage">
         <LocationOrShippingDetails
           askShippingDetails={askShippingDetails}
-          showPickUplocation={showPickUplocation}
+          showPickUpLocation={showPickUpLocation}
+          showLocation={showLocation}
           listingLocation={listingLocation}
-          isBooking={isBooking}
           isFuzzyLocation={isFuzzyLocation}
           formApi={formApi}
           locale={locale}
@@ -691,7 +693,7 @@ class StripePaymentForm extends Component {
           <p className={css.paymentInfo}>
             <FormattedMessage
               id="StripePaymentForm.submitConfirmPaymentFinePrint"
-              values={{ isBooking: isBookingYesNo, name: authorDisplayName }}
+              values={{ isBooking: isBookingYesNo, name: providerDisplayName }}
             />
           </p>
         </div>
