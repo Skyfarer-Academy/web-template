@@ -14,6 +14,65 @@ way to update this template, but currently, we follow a pattern:
 
 ## Upcoming version 2025-XX-XX
 
+## [v9.0.0] 2025-10-14
+
+This major release introduces a new transaction process: default-negotiation. It adds support for
+reverse negotiation with customer-driven negotiation loop. The process is meant for regular
+negotiation too - we'll implement that side later. This is a big change and it touches also features
+used by other processes - you should carefully check the changes before taking update from this
+repository.
+
+- [add] Add a new process: default-negotiation. There are also 2 new unit types associated with this
+  new process: request and offer.With those unit types, this process can be used for regular and
+  reverse negotiation, but this pull request only implments the reverse negotiation (unitType:
+  request) with customer-driven negotiation loop.
+  [#648](https://github.com/sharetribe/web-template/pull/648)
+- [fix] IntegerRangeFilter & PriceFilter: add faulty mode for input elements.
+  [#670](https://github.com/sharetribe/web-template/pull/670)
+- [fix] CheckoutPageWithPayment: don't show location if it's unknown for bookings.
+  [#671](https://github.com/sharetribe/web-template/pull/671)
+- [add] Update README about translation files.
+  [#668](https://github.com/sharetribe/web-template/pull/668)
+- [add] Add currently available translations for DE, ES.
+  [#666](https://github.com/sharetribe/web-template/pull/666)
+- [add] Add currently available translations for DE, ES, FR.
+  [#664](https://github.com/sharetribe/web-template/pull/664)
+
+  [v9.0.0]: https://github.com/sharetribe/web-template/compare/v8.8.0...v9.0.0
+
+## [v8.8.0] 2025-09-11
+
+- [add] Add ability to sort user inbox messages
+  [#656](https://github.com/sharetribe/web-template/pull/656)
+- [add] Update one Marketplace text (to be aligned with the corresponding copy in Email texts).
+  [#661](https://github.com/sharetribe/web-template/pull/661)
+- [add] Add currently available translations for DE, ES, FR.
+  [#658](https://github.com/sharetribe/web-template/pull/658)
+- [add] Add accessibility improvements to components related to
+
+  - search pages
+  - listing page
+  - listing editing pages
+  - transaction page
+
+  [#649](https://github.com/sharetribe/web-template/pull/649)
+
+- [change] Remove pickup fee line-item from the order breakdown.
+  [#655](https://github.com/sharetribe/web-template/pull/655)
+- [add] Update EditListingPage README.md to describe the data gathered and updated.
+  [#654](https://github.com/sharetribe/web-template/pull/654)
+- [fix] SearchPage.shared.js: category ids are always strings, so we need to convert query params to
+  strings. [#653](https://github.com/sharetribe/web-template/pull/653)
+- [fix] SearchPage: fix a bug with integer range values. The range end value was not exclusive.
+  [#652](https://github.com/sharetribe/web-template/pull/652)
+- [fix] IntegerRangeFilter: fix a bug with small text on grid layout.
+  [#650](https://github.com/sharetribe/web-template/pull/650)
+
+- [add] render potential errors in EditListingStylePanel.
+  [#647](https://github.com/sharetribe/web-template/pull/647)
+
+  [v8.8.0]: https://github.com/sharetribe/web-template/compare/v8.7.0...v8.8.0
+
 ## [v8.7.0] 2025-07-30
 
 - [add] Add currently available translations for DE, ES, FR.

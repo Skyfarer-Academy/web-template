@@ -38,6 +38,7 @@ import {
 import { richText } from '../../util/richText';
 import {
   isBookingProcess,
+  isNegotiationProcess,
   isPurchaseProcess,
   resolveLatestProcessName,
 } from '../../transactions/transaction';
@@ -77,6 +78,7 @@ import {
   listingImages,
   handleContactUser,
   handleSubmitInquiry,
+  handleNavigateToMakeOfferPage,
   handleSubmit,
   priceForSchemaMaybe,
   handleToggleFavorites,
@@ -229,7 +231,14 @@ export const ListingPageComponent = props => {
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const isBooking = isBookingProcess(processName);
   const isPurchase = isPurchaseProcess(processName);
-  const processType = isBooking ? 'booking' : isPurchase ? 'purchase' : 'inquiry';
+  const isNegotiation = isNegotiationProcess(processName);
+  const processType = isBooking
+    ? 'booking'
+    : isPurchase
+    ? 'purchase'
+    : isNegotiation
+    ? 'negotiation'
+    : 'inquiry';
 
   const validListingTypes = listingConfig.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -237,8 +246,9 @@ export const ListingPageComponent = props => {
 
   const currentAuthor = authorAvailable ? currentListing.author : null;
   const ensuredAuthor = ensureUser(currentAuthor);
+  const authorNeedsPayoutDetails = ['booking', 'purchase'].includes(processType); // TODO: add negotiation
   const noPayoutDetailsSetWithOwnListing =
-    isOwnListing && (processType !== 'inquiry' && !currentUser?.attributes?.stripeConnected);
+    isOwnListing && (authorNeedsPayoutDetails && !currentUser?.attributes?.stripeConnected);
   const payoutDetailsWarning = noPayoutDetailsSetWithOwnListing ? (
     <div>
       <FormattedMessage id="ListingPage.payoutDetailsWarning" values={{ processType }} />
@@ -264,7 +274,8 @@ export const ListingPageComponent = props => {
     setInitialValues,
     setInquiryModalOpen,
   });
-  // Note: this is for inquiry state in booking and purchase processes. Inquiry process is handled through handleSubmit.
+  // Note: this is for inquire transition to inquiry state in booking, purchase and negotiation processes.
+  // Inquiry process is handled through handleSubmit.
   const onSubmitInquiry = handleSubmitInquiry({
     ...commonParams,
     getListing,
@@ -272,12 +283,17 @@ export const ListingPageComponent = props => {
     setInquiryModalOpen,
   });
 
-  // For reschedule logic
+  // [SKYFARER] For reschedule logic
   const sdk = createInstance({
     clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
     transitVerbose: process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true',
   });
 
+  // This is to navigate to MakeOfferPage when NegotiationForm is submitted
+  const onNavigateToMakeOfferPage = handleNavigateToMakeOfferPage({
+    ...commonParams,
+    getListing,
+  });
   const onSubmit = handleSubmit({
     ...commonParams,
     currentUser,
@@ -308,12 +324,14 @@ export const ListingPageComponent = props => {
     // Disallow booking own listing (normal case)
     if ((isOwnListing && !isRescheduleFlow) || isCurrentlyClosed) {
       window.scrollTo(0, 0);
+    } else if (isNegotiation) {
+      onNavigateToMakeOfferPage(values);
     } else {
       onSubmit(values);
     }
   };
 
-  
+
   const stateInfo = publicData.State_for_inperson;
   const cityInfo = publicData.City;
   const whereIam = publicData.where_i_am;
@@ -333,7 +351,7 @@ export const ListingPageComponent = props => {
   } else if (formattedWhereIam) {
     locationInfo = formattedWhereIam;
   }
-  
+
   //console.log("City infromartion----->", cityInfo);
   const facebookImages = listingImages(currentListing, 'facebook');
   const twitterImages = listingImages(currentListing, 'twitter');

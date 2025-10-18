@@ -1,8 +1,6 @@
 @import '../../../styles/customMediaQueries.css';
 
 .root {
-  position: relative;
-  display: inline-block;
 }
 
 .contentWrapper {
@@ -69,6 +67,10 @@
 
 .valueInSidebar {
   width: 72px;
+}
+
+.invalidInput:focus {
+  border-color: var(--colorFail);
 }
 
 .valueSeparator {

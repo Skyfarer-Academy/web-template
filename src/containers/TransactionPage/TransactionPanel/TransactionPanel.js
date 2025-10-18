@@ -3,16 +3,18 @@ import classNames from 'classnames';
 import moment from 'moment'; // [SKYFARER]
 
 import { FormattedMessage, injectIntl, intlShape } from '../../../util/reactIntl';
-import { displayPrice } from '../../../util/configHelpers';
 import { propTypes } from '../../../util/types';
 import { userDisplayNameAsString } from '../../../util/data';
 import { isMobileSafari } from '../../../util/userAgent';
 import { createSlug } from '../../../util/urlHelpers';
+import { NEGOTIATION_PROCESS_NAME } from '../../../transactions/transaction';
+import { displayPrice } from '../../../util/configHelpers';
 
 import { AvatarLarge, ExternalLink, NamedLink, UserDisplayName, Modal } from '../../../components'; // [SKYFARER MERGE: +Modal]
 
 import { stateDataShape } from '../TransactionPage.stateData';
 import SendMessageForm from '../SendMessageForm/SendMessageForm';
+import TextMaybe from '../TextMaybe/TextMaybe';
 
 // These are internal components that make this file more readable.
 import BreakdownMaybe from './BreakdownMaybe';
@@ -20,9 +22,7 @@ import DetailCardHeadingsMaybe from './DetailCardHeadingsMaybe';
 import DetailCardImage from './DetailCardImage';
 import DeliveryInfoMaybe from './DeliveryInfoMaybe';
 import BookingLocationMaybe from './BookingLocationMaybe';
-import InquiryMessageMaybe from './InquiryMessageMaybe';
 import FeedSection from './FeedSection';
-import ActionButtonsMaybe from './ActionButtonsMaybe';
 import DiminishedActionButtonMaybe from './DiminishedActionButtonMaybe';
 import PanelHeading from './PanelHeading';
 
@@ -93,7 +93,7 @@ const AdjustBookingModal = ({ transaction, onClose, onSubmit, onManageDisableScr
   const price = hourLineItem?.unitPrice?.amount ?? (transaction.listing?.attributes?.price?.amount || 0);
   const currency = hourLineItem?.unitPrice?.currency || transaction.listing?.attributes?.price?.currency || 'USD';
   const total = ((hours * price) / 100).toFixed(2); // [ADJUST BOOKING] total field
-  
+
   const validateHours = (value) => {
     if (!value || value < 0) {
       return 'Hours cannot be negative';
@@ -116,7 +116,7 @@ const AdjustBookingModal = ({ transaction, onClose, onSubmit, onManageDisableScr
       setError(validationError);
       return;
     }
-    
+
     setSubmitting(true);
     setError('');
     try {
@@ -145,8 +145,8 @@ const AdjustBookingModal = ({ transaction, onClose, onSubmit, onManageDisableScr
             max={8}
             value={hours}
             onChange={handleHoursChange}
-            style={{ 
-              marginLeft: 8, 
+            style={{
+              marginLeft: 8,
               marginBottom: 4,
               border: error ? '1px solid #d9534f' : '1px solid #ccc'
             }}
@@ -154,11 +154,11 @@ const AdjustBookingModal = ({ transaction, onClose, onSubmit, onManageDisableScr
           />
         </label>
         {error && (
-          <div style={{ 
-            color: '#d9534f', 
-            fontSize: '12px', 
+          <div style={{
+            color: '#d9534f',
+            fontSize: '12px',
             marginTop: '4px',
-            marginBottom: '8px' 
+            marginBottom: '8px'
           }}>
             {error}
           </div>
@@ -333,7 +333,7 @@ export class TransactionPanelComponent extends Component {
       listing,
       customer,
       provider,
-      hasTransitions = false,
+      transitions,
       protectedData,
       messages,
       initialMessageFailed = false,
@@ -346,7 +346,9 @@ export class TransactionPanelComponent extends Component {
       intl,
       stateData = {},
       showBookingLocation = false,
+      offer,
       activityFeed,
+      actionButtons,
       isInquiryProcess,
       orderBreakdown,
       orderPanel,
@@ -367,6 +369,7 @@ export class TransactionPanelComponent extends Component {
     };
     // [/SKYFARER]
 
+    const hasTransitions = transitions.length > 0;
     const isCustomer = transactionRole === 'customer';
     const isProvider = transactionRole === 'provider';
 
@@ -390,32 +393,34 @@ export class TransactionPanelComponent extends Component {
     const listingTitle = listingDeleted ? deletedListingTitle : listing?.attributes?.title;
     const firstImage = listing?.images?.length > 0 ? listing?.images[0] : null;
 
-    const actionButtons = (
-      <ActionButtonsMaybe
-        showButtons={stateData.showActionButtons}
-        setModal={(modal) => this.setState({ modal })} // [SKYFARER]
-        primaryButtonProps={stateData?.primaryButtonProps}
-        secondaryButtonProps={stateData?.secondaryButtonProps}
-        isListingDeleted={listingDeleted}
-        isProvider={isProvider}
-        onShowAdjustModal={this.handleShowAdjustModal} // [ADJUST BOOKING]
-        adjustDisabled={(() => {
-          const process = getProcess(stateData.processName);
-          const isAccepted = process && process.getState(transaction) === process.states.ACCEPTED;
-          const transitions = transaction?.attributes?.transitions || [];
-          const hasAdjusted = transitions.some(t =>
-            t.transition === 'transition/provider-adjust-booking-charge' ||
-            t.transition === 'transition/provider-adjust-booking-refund'
-          );
-          return !process || !isAccepted || hasAdjusted;
-        })()}
-      />
-    );
+    // [SKYFARER] v9.0.0 removed ActionButtonsMaybe
+    // const actionButtons = (
+    //   <ActionButtonsMaybe
+    //     showButtons={stateData.showActionButtons}
+    //     setModal={(modal) => this.setState({ modal })} // [SKYFARER]
+    //     primaryButtonProps={stateData?.primaryButtonProps}
+    //     secondaryButtonProps={stateData?.secondaryButtonProps}
+    //     isListingDeleted={listingDeleted}
+    //     isProvider={isProvider}
+    //     onShowAdjustModal={this.handleShowAdjustModal} // [ADJUST BOOKING]
+    //     adjustDisabled={(() => {
+    //       const process = getProcess(stateData.processName);
+    //       const isAccepted = process && process.getState(transaction) === process.states.ACCEPTED;
+    //       const transitions = transaction?.attributes?.transitions || [];
+    //       const hasAdjusted = transitions.some(t =>
+    //         t.transition === 'transition/provider-adjust-booking-charge' ||
+    //         t.transition === 'transition/provider-adjust-booking-refund'
+    //       );
+    //       return !process || !isAccepted || hasAdjusted;
+    //     })()}
+    //   />
+    // );
 
     const listingType = listing?.attributes?.publicData?.listingType;
     const listingTypeConfigs = config.listing.listingTypes;
     const listingTypeConfig = listingTypeConfigs.find(conf => conf.listingType === listingType);
     const showPrice = isInquiryProcess && displayPrice(listingTypeConfig);
+    const showBreakDown = stateData.showBreakDown !== false; // NOTE: undefined defaults to true due to historical reasons.
 
     const showSendMessageForm =
       !isCustomerBanned && !isCustomerDeleted && !isProviderBanned && !isProviderDeleted;
@@ -474,20 +479,26 @@ export class TransactionPanelComponent extends Component {
               }
             />
 
-            <InquiryMessageMaybe
-              protectedData={protectedData}
-              showInquiryMessage={isInquiryProcess}
-              isCustomer={isCustomer}
+            <TextMaybe
+              rootClassName={css.inquiryMessageContainer}
+              heading={intl.formatMessage({ id: 'TransactionPanel.inquiryMessageHeading' })}
+              text={protectedData?.inquiryMessage}
+              isOwn={isCustomer}
+              showText={isInquiryProcess}
             />
+
+            {offer}
 
             {!isInquiryProcess ? (
               <div className={css.orderDetails}>
                 <div className={css.orderDetailsMobileSection}>
-                  <BreakdownMaybe
-                    orderBreakdown={orderBreakdown}
-                    processName={stateData.processName}
-                    priceVariantName={priceVariantName}
-                  />
+                  {showBreakDown ? (
+                    <BreakdownMaybe
+                      orderBreakdown={orderBreakdown}
+                      processName={stateData.processName}
+                      priceVariantName={priceVariantName}
+                    />
+                  ) : null}
                   <DiminishedActionButtonMaybe
                     showDispute={stateData.showDispute}
                     onOpenDisputeModal={onOpenDisputeModal}
@@ -580,7 +591,9 @@ export class TransactionPanelComponent extends Component {
           </div>
 
           <div className={css.asideDesktop}>
-            <div className={css.stickySection}>
+            <div
+              className={classNames(css.stickySection, { [css.noListingImage]: !showListingImage })}
+            >
               <div className={css.detailCard}>
                 <DetailCardImage
                   avatarWrapperClassName={css.avatarWrapperDesktop}
@@ -612,12 +625,14 @@ export class TransactionPanelComponent extends Component {
                   intl={intl}
                   />
                 {showOrderPanel ? orderPanel : null}
-                <BreakdownMaybe
-                  className={css.breakdownContainer}
-                  orderBreakdown={orderBreakdown}
-                  processName={stateData.processName}
-                  priceVariantName={priceVariantName}
-                />
+                {showBreakDown ? (
+                  <BreakdownMaybe
+                    className={css.breakdownContainer}
+                    orderBreakdown={orderBreakdown}
+                    processName={stateData.processName}
+                    priceVariantName={priceVariantName}
+                  />
+                ) : null}
                 {/* [SKYFARER] */}
                 {googleCalendarEventDetails?.meetingLink && !transaction.attributes.lastTransition.includes('cancel') && (
                   <div className={css.meetingLink}>

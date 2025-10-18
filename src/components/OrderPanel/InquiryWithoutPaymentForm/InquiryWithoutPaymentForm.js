@@ -10,10 +10,10 @@ import css from './InquiryWithoutPaymentForm.module.css';
 import AvemcoBanner from '../../AvemcoBanner/AvemcoBanner';
 const renderForm = formRenderProps => {
   // FormRenderProps from final-form
-  const { formId, className, rootClassName, handleSubmit, categoryLevel1 } = formRenderProps;
+  const { formId, className, rootClassName, handleSubmit, categoryLevel1 } = formRenderProps; // [SKYFARER] Listing categoryLevel1
 
   // console.log("ProductOrderForm for listingId:", listingId);
-  console.log("Listing categoryLevel1:", categoryLevel1);
+  // console.log("Listing categoryLevel1:", categoryLevel1);
   const classes = classNames(rootClassName || css.root, className);
 
   return (
